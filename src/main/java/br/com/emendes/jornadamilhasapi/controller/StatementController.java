@@ -5,11 +5,11 @@ import br.com.emendes.jornadamilhasapi.service.dto.request.CreateStatementReques
 import br.com.emendes.jornadamilhasapi.service.dto.response.StatementResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
@@ -36,6 +36,16 @@ public class StatementController {
     URI uri = URI.create(String.format("/api/statement/%s", statementResponse.id()));
 
     return ResponseEntity.created(uri).body(statementResponse);
+  }
+
+  /**
+   * Método responsável por GET /api/statement.
+   *
+   * @param pageable que contém as informações de como a busca será paginada.
+   */
+  @GetMapping
+  public ResponseEntity<Page<StatementResponse>> fetch(@PageableDefault Pageable pageable) {
+    return ResponseEntity.ok(statementService.fetch(pageable));
   }
 
 }

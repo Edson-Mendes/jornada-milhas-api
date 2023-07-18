@@ -8,6 +8,8 @@ import br.com.emendes.jornadamilhasapi.service.dto.request.CreateStatementReques
 import br.com.emendes.jornadamilhasapi.service.dto.response.StatementResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -35,6 +37,15 @@ public class StatementServiceImpl implements StatementService {
 
     log.info("statement saved successful with id: {}", statement.getId());
     return statementMapper.toStatementResponse(statement);
+  }
+
+  @Override
+  public Page<StatementResponse> fetch(Pageable pageable) {
+    log.info("fetching page: {} and size: {} of Statements.", pageable.getPageNumber(), pageable.getPageSize());
+
+    Page<Statement> statementPage = statementRepository.findAll(pageable);
+
+    return statementPage.map(statementMapper::toStatementResponse);
   }
 
 }
