@@ -27,6 +27,14 @@ public interface StatementService {
   Page<StatementResponse> fetch(Pageable pageable);
 
   /**
+   * Busca de Statement por id.
+   *
+   * @param statementId identificador do Statement.
+   * @return StatementResponse.
+   */
+  StatementResponse findById(String statementId);
+
+  /**
    * Atualiza um Statement por id.
    *
    * @param statementId            identificador do Statement.

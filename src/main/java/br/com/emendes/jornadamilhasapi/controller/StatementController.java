@@ -49,7 +49,17 @@ public class StatementController {
   }
 
   /**
-   * Método responsável por GET /api/statement.
+   * Método responsável por GET /api/statement/{id}.
+   *
+   * @param statementId      identificador do Statement a ser atualizado.
+   */
+  @GetMapping("/{id}")
+  public ResponseEntity<StatementResponse> findById(@PathVariable(name = "id") String statementId) {
+    return ResponseEntity.ok(statementService.findById(statementId));
+  }
+
+  /**
+   * Método responsável por PUT /api/statement/{id}.
    *
    * @param statementId      identificador do Statement a ser atualizado.
    * @param statementRequest contento as novas informações do Statement.

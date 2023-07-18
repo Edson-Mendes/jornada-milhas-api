@@ -50,18 +50,39 @@ public class StatementServiceImpl implements StatementService {
   }
 
   @Override
+  public StatementResponse findById(String statementId) {
+    log.info("attempt to fetch statement with id: {}", statementId);
+
+    Statement statement = findStatementById(statementId);
+
+    log.info("statement found successful with id: {}", statement.getId());
+    return statementMapper.toStatementResponse(statement);
+  }
+
+  @Override
   public void update(String statementId, CreateStatementRequest createStatementRequest) {
     log.info("attempt to update statement with id: {}", statementId);
 
-    Statement statement = statementRepository.findById(statementId).orElseThrow(() -> {
-      log.info("statement not found for id: {}", statementId);
-      return new ResourceNotFoundException("Statement not found");
-    });
+    Statement statement = findStatementById(statementId);
 
     statementMapper.merge(statement, createStatementRequest);
     statementRepository.save(statement);
 
     log.info("statement updated successful with id: {}", statement.getId());
+  }
+
+  /**
+   * Busca Statement por id.
+   *
+   * @param statementId identificador do Statement.
+   * @return Statement para o dado id.
+   * @throws ResourceNotFoundException caso não seja encontrado Statement para o dado statementId.
+   */
+  private Statement findStatementById(String statementId) {
+    return statementRepository.findById(statementId).orElseThrow(() -> {
+      log.info("statement not found for id: {}", statementId);
+      return new ResourceNotFoundException("Statement not found");
+    });
   }
 
 }
