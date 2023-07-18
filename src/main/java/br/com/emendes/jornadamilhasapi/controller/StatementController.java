@@ -1,7 +1,7 @@
 package br.com.emendes.jornadamilhasapi.controller;
 
 import br.com.emendes.jornadamilhasapi.service.StatementService;
-import br.com.emendes.jornadamilhasapi.service.dto.request.CreateStatementRequest;
+import br.com.emendes.jornadamilhasapi.service.dto.request.StatementRequest;
 import br.com.emendes.jornadamilhasapi.service.dto.response.StatementResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,32 +14,32 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 
 /**
- * Controller responsável pelo endpoint /api/statement
+ * Controller responsável pelo endpoint /api/statements
  */
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/statement")
+@RequestMapping("/api/statements")
 public class StatementController {
 
   private final StatementService statementService;
 
   /**
-   * Método responsável por POST /api/statement.
+   * Método responsável por POST /api/statements.
    *
    * @param statementRequest que contém as informações do Statement a ser salvo
    */
   @PostMapping
   public ResponseEntity<StatementResponse> save(
-      @RequestBody @Valid CreateStatementRequest statementRequest) {
+      @RequestBody @Valid StatementRequest statementRequest) {
     StatementResponse statementResponse = statementService.save(statementRequest);
 
-    URI uri = URI.create(String.format("/api/statement/%s", statementResponse.id()));
+    URI uri = URI.create(String.format("/api/statements/%s", statementResponse.id()));
 
     return ResponseEntity.created(uri).body(statementResponse);
   }
 
   /**
-   * Método responsável por GET /api/statement.
+   * Método responsável por GET /api/statements.
    *
    * @param pageable que contém as informações de como a busca será paginada.
    */
@@ -49,7 +49,7 @@ public class StatementController {
   }
 
   /**
-   * Método responsável por GET /api/statement/{id}.
+   * Método responsável por GET /api/statements/{id}.
    *
    * @param statementId      identificador do Statement a ser atualizado.
    */
@@ -59,7 +59,7 @@ public class StatementController {
   }
 
   /**
-   * Método responsável por PUT /api/statement/{id}.
+   * Método responsável por PUT /api/statements/{id}.
    *
    * @param statementId      identificador do Statement a ser atualizado.
    * @param statementRequest contento as novas informações do Statement.
@@ -67,7 +67,7 @@ public class StatementController {
   @PutMapping("/{id}")
   public ResponseEntity<Void> update(
       @PathVariable(name = "id") String statementId,
-      @RequestBody @Valid CreateStatementRequest statementRequest) {
+      @RequestBody @Valid StatementRequest statementRequest) {
     statementService.update(statementId, statementRequest);
 
     return ResponseEntity.noContent().build();

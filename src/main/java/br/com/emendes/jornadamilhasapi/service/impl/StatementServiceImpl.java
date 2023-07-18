@@ -5,7 +5,7 @@ import br.com.emendes.jornadamilhasapi.mapper.StatementMapper;
 import br.com.emendes.jornadamilhasapi.model.Statement;
 import br.com.emendes.jornadamilhasapi.repository.StatementRepository;
 import br.com.emendes.jornadamilhasapi.service.StatementService;
-import br.com.emendes.jornadamilhasapi.service.dto.request.CreateStatementRequest;
+import br.com.emendes.jornadamilhasapi.service.dto.request.StatementRequest;
 import br.com.emendes.jornadamilhasapi.service.dto.response.StatementResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,9 +28,9 @@ public class StatementServiceImpl implements StatementService {
   private final StatementRepository statementRepository;
 
   @Override
-  public StatementResponse save(CreateStatementRequest createStatementRequest) {
+  public StatementResponse save(StatementRequest statementRequest) {
     log.info("attempt to save Statement.");
-    Statement statement = statementMapper.toStatement(createStatementRequest);
+    Statement statement = statementMapper.toStatement(statementRequest);
 
     statement.setCreatedAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
 
@@ -60,12 +60,12 @@ public class StatementServiceImpl implements StatementService {
   }
 
   @Override
-  public void update(String statementId, CreateStatementRequest createStatementRequest) {
+  public void update(String statementId, StatementRequest statementRequest) {
     log.info("attempt to update statement with id: {}", statementId);
 
     Statement statement = findStatementById(statementId);
 
-    statementMapper.merge(statement, createStatementRequest);
+    statementMapper.merge(statement, statementRequest);
     statementRepository.save(statement);
 
     log.info("statement updated successful with id: {}", statement.getId());

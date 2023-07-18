@@ -1,7 +1,7 @@
 package br.com.emendes.jornadamilhasapi.mapper;
 
 import br.com.emendes.jornadamilhasapi.model.Statement;
-import br.com.emendes.jornadamilhasapi.service.dto.request.CreateStatementRequest;
+import br.com.emendes.jornadamilhasapi.service.dto.request.StatementRequest;
 import br.com.emendes.jornadamilhasapi.service.dto.response.StatementResponse;
 
 /**
@@ -13,10 +13,10 @@ public interface StatementMapper {
    * Mapeia o DTO CreateStatementRequest para o document Statement.<br>
    * createStatementRequest não deve ser null.
    *
-   * @param createStatementRequest que será mapeado para Statement.
+   * @param statementRequest que será mapeado para Statement.
    * @return {@link Statement} contendo as informações que estavam em createStatementRequest.
    */
-  Statement toStatement(CreateStatementRequest createStatementRequest);
+  Statement toStatement(StatementRequest statementRequest);
 
   /**
    * Mapeia um document Statement para o DTO StatementResponse.
@@ -30,8 +30,8 @@ public interface StatementMapper {
    * Mescla as informações dentro de statement com as informações contidas em createStatementRequest.
    *
    * @param statement              que receberá as novas informações.
-   * @param createStatementRequest que contém as novas informações.
+   * @param statementRequest que contém as novas informações.
    */
-  void merge(Statement statement, CreateStatementRequest createStatementRequest);
+  void merge(Statement statement, StatementRequest statementRequest);
 
 }

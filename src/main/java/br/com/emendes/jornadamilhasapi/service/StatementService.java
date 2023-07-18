@@ -1,6 +1,6 @@
 package br.com.emendes.jornadamilhasapi.service;
 
-import br.com.emendes.jornadamilhasapi.service.dto.request.CreateStatementRequest;
+import br.com.emendes.jornadamilhasapi.service.dto.request.StatementRequest;
 import br.com.emendes.jornadamilhasapi.service.dto.response.StatementResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,10 +13,10 @@ public interface StatementService {
   /**
    * Salva um Statement no sistema.
    *
-   * @param createStatementRequest contendo as informações do novo Statement.
+   * @param statementRequest contendo as informações do novo Statement.
    * @return {@link StatementResponse} contendo as informações do Statement salvo.
    */
-  StatementResponse save(CreateStatementRequest createStatementRequest);
+  StatementResponse save(StatementRequest statementRequest);
 
   /**
    * Busca paginada de Statements.
@@ -38,8 +38,8 @@ public interface StatementService {
    * Atualiza um Statement por id.
    *
    * @param statementId            identificador do Statement.
-   * @param createStatementRequest objeto que contém as novas informações do Statement.
+   * @param statementRequest objeto que contém as novas informações do Statement.
    */
-  void update(String statementId, CreateStatementRequest createStatementRequest);
+  void update(String statementId, StatementRequest statementRequest);
 
 }

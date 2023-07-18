@@ -9,7 +9,7 @@ import org.hibernate.validator.constraints.URL;
  * Record DTO para receber dados de criação de Statement.
  */
 @Builder
-public record CreateStatementRequest(
+public record StatementRequest(
     @NotBlank(message = "username must not be blank")
     @Size(min = 2, max = 100, message = "username must contain between {min} and {max} characters long")
     String username,
