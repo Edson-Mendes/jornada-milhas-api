@@ -1,11 +1,13 @@
 package br.com.emendes.jornadamilhasapi.handler;
 
+import br.com.emendes.jornadamilhasapi.exception.ResourceNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -42,4 +44,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     return ResponseEntity.badRequest().body(problemDetail);
   }
 
+  /**
+   * Trata {@link ResourceNotFoundException}.
+   */
+  @ExceptionHandler(ResourceNotFoundException.class)
+  public ResponseEntity<ProblemDetail> handleResourceNotFound(ResourceNotFoundException ex) {
+    HttpStatusCode status = HttpStatusCode.valueOf(404);
+    ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, ex.getMessage());
+
+    URI uri = URI.create("http://non-implemented.com/resource-not-found");
+    problemDetail.setType(uri);
+
+    return ResponseEntity.status(status).body(problemDetail);
+  }
 }

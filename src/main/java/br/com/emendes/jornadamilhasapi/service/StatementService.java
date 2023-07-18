@@ -26,4 +26,12 @@ public interface StatementService {
    */
   Page<StatementResponse> fetch(Pageable pageable);
 
+  /**
+   * Atualiza um Statement por id.
+   *
+   * @param statementId            identificador do Statement.
+   * @param createStatementRequest objeto que contém as novas informações do Statement.
+   */
+  void update(String statementId, CreateStatementRequest createStatementRequest);
+
 }

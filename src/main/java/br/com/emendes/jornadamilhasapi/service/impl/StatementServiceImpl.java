@@ -1,5 +1,6 @@
 package br.com.emendes.jornadamilhasapi.service.impl;
 
+import br.com.emendes.jornadamilhasapi.exception.ResourceNotFoundException;
 import br.com.emendes.jornadamilhasapi.mapper.StatementMapper;
 import br.com.emendes.jornadamilhasapi.model.Statement;
 import br.com.emendes.jornadamilhasapi.repository.StatementRepository;
@@ -46,6 +47,21 @@ public class StatementServiceImpl implements StatementService {
     Page<Statement> statementPage = statementRepository.findAll(pageable);
 
     return statementPage.map(statementMapper::toStatementResponse);
+  }
+
+  @Override
+  public void update(String statementId, CreateStatementRequest createStatementRequest) {
+    log.info("attempt to update statement with id: {}", statementId);
+
+    Statement statement = statementRepository.findById(statementId).orElseThrow(() -> {
+      log.info("statement not found for id: {}", statementId);
+      return new ResourceNotFoundException("Statement not found");
+    });
+
+    statementMapper.merge(statement, createStatementRequest);
+    statementRepository.save(statement);
+
+    log.info("statement updated successful with id: {}", statement.getId());
   }
 
 }

@@ -48,4 +48,19 @@ public class StatementController {
     return ResponseEntity.ok(statementService.fetch(pageable));
   }
 
+  /**
+   * Método responsável por GET /api/statement.
+   *
+   * @param statementId      identificador do Statement a ser atualizado.
+   * @param statementRequest contento as novas informações do Statement.
+   */
+  @PutMapping("/{id}")
+  public ResponseEntity<Void> update(
+      @PathVariable(name = "id") String statementId,
+      @RequestBody @Valid CreateStatementRequest statementRequest) {
+    statementService.update(statementId, statementRequest);
+
+    return ResponseEntity.noContent().build();
+  }
+
 }

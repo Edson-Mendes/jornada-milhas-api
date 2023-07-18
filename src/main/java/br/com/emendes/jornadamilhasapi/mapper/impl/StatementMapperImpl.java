@@ -35,4 +35,11 @@ public class StatementMapperImpl implements StatementMapper {
         .build();
   }
 
+  @Override
+  public void merge(Statement statement, CreateStatementRequest createStatementRequest) {
+    statement.setUsername(createStatementRequest.username());
+    statement.setText(createStatementRequest.text());
+    statement.setUrlImage(createStatementRequest.urlImage());
+  }
+
 }
