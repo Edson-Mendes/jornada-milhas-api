@@ -3,12 +3,14 @@ package br.com.emendes.jornadamilhasapi.controller;
 import br.com.emendes.jornadamilhasapi.service.StatementService;
 import br.com.emendes.jornadamilhasapi.service.dto.request.StatementRequest;
 import br.com.emendes.jornadamilhasapi.service.dto.response.StatementResponse;
+import br.com.emendes.jornadamilhasapi.validation.annotation.IdValidation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -16,6 +18,7 @@ import java.net.URI;
 /**
  * Controller responsável pelo endpoint /api/statements
  */
+@Validated
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/statements")
@@ -54,7 +57,8 @@ public class StatementController {
    * @param statementId      identificador do Statement a ser atualizado.
    */
   @GetMapping("/{id}")
-  public ResponseEntity<StatementResponse> findById(@PathVariable(name = "id") String statementId) {
+  public ResponseEntity<StatementResponse> findById(
+      @PathVariable(name = "id") @IdValidation String statementId) {
     return ResponseEntity.ok(statementService.findById(statementId));
   }
 
@@ -66,7 +70,7 @@ public class StatementController {
    */
   @PutMapping("/{id}")
   public ResponseEntity<Void> update(
-      @PathVariable(name = "id") String statementId,
+      @PathVariable(name = "id") @IdValidation String statementId,
       @RequestBody @Valid StatementRequest statementRequest) {
     statementService.update(statementId, statementRequest);
 
@@ -79,7 +83,7 @@ public class StatementController {
    * @param statementId identificador do Statement a ser deletado.
    */
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(@PathVariable(name = "id") String statementId) {
+  public ResponseEntity<Void> delete(@PathVariable(name = "id") @IdValidation String statementId) {
     statementService.delete(statementId);
 
     return ResponseEntity.noContent().build();
