@@ -19,6 +19,7 @@ import java.util.List;
 /**
  * Controller responsável pelo endpoint /api/statements
  */
+@CrossOrigin
 @Validated
 @RequiredArgsConstructor
 @RestController
