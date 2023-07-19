@@ -14,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 /**
  * Controller responsável pelo endpoint /api/statements
@@ -54,12 +55,20 @@ public class StatementController {
   /**
    * Método responsável por GET /api/statements/{id}.
    *
-   * @param statementId      identificador do Statement a ser atualizado.
+   * @param statementId identificador do Statement a ser atualizado.
    */
   @GetMapping("/{id}")
   public ResponseEntity<StatementResponse> findById(
       @PathVariable(name = "id") @IdValidation String statementId) {
     return ResponseEntity.ok(statementService.findById(statementId));
+  }
+
+  /**
+   * Método responsável por GET /api/statements/home
+   */
+  @GetMapping("/home")
+  public ResponseEntity<List<StatementResponse>> fetchLast() {
+    return ResponseEntity.ok(statementService.fetchLast(3));
   }
 
   /**

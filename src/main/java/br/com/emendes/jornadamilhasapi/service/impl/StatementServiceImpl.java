@@ -10,11 +10,14 @@ import br.com.emendes.jornadamilhasapi.service.dto.response.StatementResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 /**
  * Implementação de {@link StatementService}.
@@ -47,6 +50,19 @@ public class StatementServiceImpl implements StatementService {
     Page<Statement> statementPage = statementRepository.findAll(pageable);
 
     return statementPage.map(statementMapper::toStatementResponse);
+  }
+
+  @Override
+  public List<StatementResponse> fetchLast(int quantity) {
+    if (quantity <= 0) {
+      throw new IllegalArgumentException("quantity must not be equal or less than 0");
+    }
+    log.info("fetching last {} statements", quantity);
+
+    Pageable pageable = PageRequest.of(0, quantity, Sort.Direction.DESC, "createdAt");
+    Page<StatementResponse> statementResponsePage = fetch(pageable);
+
+    return statementResponsePage.getContent();
   }
 
   @Override
