@@ -73,4 +73,16 @@ public class StatementController {
     return ResponseEntity.noContent().build();
   }
 
+  /**
+   * Método responsável por DELETE /api/statements/{id}.
+   *
+   * @param statementId identificador do Statement a ser deletado.
+   */
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> delete(@PathVariable(name = "id") String statementId) {
+    statementService.delete(statementId);
+
+    return ResponseEntity.noContent().build();
+  }
+
 }

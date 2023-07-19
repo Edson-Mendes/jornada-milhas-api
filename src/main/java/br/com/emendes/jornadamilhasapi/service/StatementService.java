@@ -42,4 +42,11 @@ public interface StatementService {
    */
   void update(String statementId, StatementRequest statementRequest);
 
+  /**
+   * Deleta um Statement por id.
+   *
+   * @param statementId identificador do Statement a ser deletado.
+   */
+  void delete(String statementId);
+
 }

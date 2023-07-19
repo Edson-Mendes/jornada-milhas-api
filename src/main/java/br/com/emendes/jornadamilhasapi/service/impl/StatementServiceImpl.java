@@ -71,6 +71,16 @@ public class StatementServiceImpl implements StatementService {
     log.info("statement updated successful with id: {}", statement.getId());
   }
 
+  @Override
+  public void delete(String statementId) {
+    log.info("attempt to delete Statement with id: {}", statementId);
+
+    Statement statement = findStatementById(statementId);
+    statementRepository.delete(statement);
+
+    log.info("statement deleted successful with id: {}", statement.getId());
+  }
+
   /**
    * Busca Statement por id.
    *
