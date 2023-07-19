@@ -1,6 +1,8 @@
 package br.com.emendes.jornadamilhasapi.handler;
 
 import br.com.emendes.jornadamilhasapi.exception.ResourceNotFoundException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
@@ -53,6 +55,24 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, ex.getMessage());
 
     URI uri = URI.create("http://non-implemented.com/resource-not-found");
+    problemDetail.setType(uri);
+
+    return ResponseEntity.status(status).body(problemDetail);
+  }
+
+  /**
+   * Trata {@link ConstraintViolationException}.
+   */
+  @ExceptionHandler(ConstraintViolationException.class)
+  public ResponseEntity<ProblemDetail> handleConstraintViolationException(ConstraintViolationException ex) {
+    HttpStatusCode status = HttpStatusCode.valueOf(400);
+    String details = ex.getConstraintViolations().stream()
+        .map(ConstraintViolation::getMessage)
+        .collect(Collectors.joining(","));
+
+    ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, details);
+
+    URI uri = URI.create("http://non-implemented.com/invalid-param");
     problemDetail.setType(uri);
 
     return ResponseEntity.status(status).body(problemDetail);
