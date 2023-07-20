@@ -1,6 +1,7 @@
 package br.com.emendes.jornadamilhasapi.unit.controller;
 
 import br.com.emendes.jornadamilhasapi.controller.StatementController;
+import br.com.emendes.jornadamilhasapi.exception.ResourceNotFoundException;
 import br.com.emendes.jornadamilhasapi.service.StatementService;
 import br.com.emendes.jornadamilhasapi.service.dto.response.StatementResponse;
 import br.com.emendes.jornadamilhasapi.util.PageableResponse;
@@ -138,6 +139,72 @@ class StatementControllerTest {
           });
 
       Assertions.assertThat(actualResponseBody).isNotNull().isNotEmpty().hasSize(1);
+    }
+
+  }
+
+  @Nested
+  @DisplayName("Tests for findById endpoint")
+  class FindByIdEndpoint {
+
+    private final String URL_TEMPLATE = "/api/statements/{id}";
+
+    @Test
+    @DisplayName("findById must return status 200 and StatementResponse when found successfully")
+    void findById_MustReturnStatus200AndStatementResponse_WhenFoundSuccessfully() throws Exception {
+      BDDMockito.when(statementServiceMock.findById(any()))
+          .thenReturn(StatementFaker.statementResponse());
+
+      String actualContent = mockMvc
+          .perform(get(URL_TEMPLATE, "1234567890abcdef12345678"))
+          .andExpect(status().isOk())
+          .andReturn().getResponse().getContentAsString();
+
+      StatementResponse actualResponseBody = mapper.readValue(actualContent, StatementResponse.class);
+
+      Assertions.assertThat(actualResponseBody).isNotNull();
+      Assertions.assertThat(actualResponseBody.id()).isNotNull().isEqualTo("1234567890abcdef12345678");
+      Assertions.assertThat(actualResponseBody.username()).isNotNull().isEqualTo("Lorem Ipsum");
+      Assertions.assertThat(actualResponseBody.text()).isNotNull().isEqualTo("lorem ipsum dolor sit amet");
+      Assertions.assertThat(actualResponseBody.urlImage()).isNotNull();
+      Assertions.assertThat(actualResponseBody.createdAt()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("findById must return status 400 and ProblemDetail when id is invalid")
+    void findById_MustReturnStatus400AndProblemDetail_WhenIdIsInvalid() throws Exception {
+      String actualContent = mockMvc
+          .perform(get(URL_TEMPLATE, "1234567890ZX"))
+          .andExpect(status().isBadRequest())
+          .andReturn().getResponse().getContentAsString();
+
+      ProblemDetail actualResponseBody = mapper.readValue(actualContent, ProblemDetail.class);
+
+      Assertions.assertThat(actualResponseBody).isNotNull();
+      Assertions.assertThat(actualResponseBody.getTitle()).isNotNull().isEqualTo("Bad Request");
+      Assertions.assertThat(actualResponseBody.getDetail()).isNotNull()
+          .contains("id must be hexadecimal value", "id must be 24 characters long");
+      Assertions.assertThat(actualResponseBody.getStatus()).isEqualTo(400);
+    }
+
+    @Test
+    @DisplayName("findById must return status 404 and ProblemDetail when not find statement")
+    void findById_MustReturnStatus404AndProblemDetail_WhenNotFindStatement() throws Exception {
+      BDDMockito.given(statementServiceMock.findById(any()))
+              .willThrow(new ResourceNotFoundException("Statement not found"));
+
+      String actualContent = mockMvc
+          .perform(get(URL_TEMPLATE, "1234567890abcdef12345678"))
+          .andExpect(status().isNotFound())
+          .andReturn().getResponse().getContentAsString();
+
+      ProblemDetail actualResponseBody = mapper.readValue(actualContent, ProblemDetail.class);
+
+      Assertions.assertThat(actualResponseBody).isNotNull();
+      Assertions.assertThat(actualResponseBody.getTitle()).isNotNull().isEqualTo("Not Found");
+      Assertions.assertThat(actualResponseBody.getDetail()).isNotNull()
+          .isEqualTo("Statement not found");
+      Assertions.assertThat(actualResponseBody.getStatus()).isEqualTo(404);
     }
 
   }
