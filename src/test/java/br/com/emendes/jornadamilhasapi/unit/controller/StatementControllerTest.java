@@ -26,8 +26,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -228,6 +227,117 @@ class StatementControllerTest {
       });
 
       Assertions.assertThat(actualResponseBody).isNotNull().hasSize(3);
+    }
+
+  }
+
+  @Nested
+  @DisplayName("Tests for update endpoint")
+  class UpdateEndpoint {
+
+    private static final String URL_TEMPLATE = "/api/statements/{id}";
+
+    @Test
+    @DisplayName("update must return status 204 when update successfully")
+    void update_MustReturnStatus204_WhenUpdateSuccessfully() throws Exception {
+      String requestBody = """
+          {
+            "username": "Lorem Ipsum",
+            "text": "lorem ipsum dolor sit amet updated",
+            "urlImage": "https://www.imagexpto.com/123456"
+          }
+          """;
+
+      mockMvc.perform(put(URL_TEMPLATE, "1234567890abcdef12345678")
+              .contentType(CONTENT_TYPE).content(requestBody))
+          .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("update must return status 400 and ProblemDetail when request body has invalid fields")
+    void update_MustReturnStatus400AndProblemDetail_WhenRequestBodyHasInvalidFields() throws Exception {
+      String requestBody = """
+          {
+            "username": "",
+            "text": "lorem ipsum dolor sit amet updated",
+            "urlImage": "https://www.imagexpto.com/123456"
+          }
+          """;
+
+      String actualContent = mockMvc.perform(put(URL_TEMPLATE, "1234567890abcdef12345678")
+              .contentType(CONTENT_TYPE).content(requestBody))
+          .andExpect(status().isBadRequest())
+          .andReturn().getResponse().getContentAsString();
+
+      ProblemDetail actualResponseBody = mapper.readValue(actualContent, ProblemDetail.class);
+
+      Assertions.assertThat(actualResponseBody).isNotNull();
+      Assertions.assertThat(actualResponseBody.getTitle()).isNotNull().isEqualTo("Bad Request");
+      Assertions.assertThat(actualResponseBody.getDetail()).isNotNull()
+          .isEqualTo("Invalid field(s)");
+      Assertions.assertThat(actualResponseBody.getStatus()).isEqualTo(400);
+
+      Assertions.assertThat(actualResponseBody.getProperties()).isNotNull();
+
+      String actualFields = (String) actualResponseBody.getProperties().get("fields");
+      String actualMessages = (String) actualResponseBody.getProperties().get("errorMessages");
+
+      Assertions.assertThat(actualFields).isNotNull().contains("username");
+      Assertions.assertThat(actualMessages).isNotNull()
+          .contains("username must not be blank", "username must contain between 2 and 100 characters long");
+    }
+
+    @Test
+    @DisplayName("update must return status 400 and ProblemDetail when id is invalid")
+    void update_MustReturnStatus400AndProblemDetail_WhenIdIsInvalid() throws Exception {
+      String requestBody = """
+          {
+            "username": "Lorem Ipsum",
+            "text": "lorem ipsum dolor sit amet updated",
+            "urlImage": "https://www.imagexpto.com/123456"
+          }
+          """;
+
+      String actualContent = mockMvc.perform(put(URL_TEMPLATE, "1234567890X")
+              .contentType(CONTENT_TYPE).content(requestBody))
+          .andExpect(status().isBadRequest())
+          .andReturn().getResponse().getContentAsString();
+
+      ProblemDetail actualResponseBody = mapper.readValue(actualContent, ProblemDetail.class);
+
+      Assertions.assertThat(actualResponseBody).isNotNull();
+      Assertions.assertThat(actualResponseBody.getTitle()).isNotNull().isEqualTo("Bad Request");
+      Assertions.assertThat(actualResponseBody.getDetail()).isNotNull()
+          .contains("id must be hexadecimal value", "id must be 24 characters long");
+      Assertions.assertThat(actualResponseBody.getStatus()).isEqualTo(400);
+    }
+
+    @Test
+    @DisplayName("update must return status 404 and ProblemDetail when not find statement")
+    void update_MustReturnStatus404AndProblemDetail_WhenNotFindStatement() throws Exception {
+      BDDMockito.willThrow(new ResourceNotFoundException("Statement not found"))
+          .given(statementServiceMock).update(any(), any());
+
+      String requestBody = """
+          {
+            "username": "Lorem Ipsum",
+            "text": "lorem ipsum dolor sit amet updated",
+            "urlImage": "https://www.imagexpto.com/123456"
+          }
+          """;
+
+      String actualContent = mockMvc.perform(put(URL_TEMPLATE, "1234567890abcdef12345678")
+              .contentType(CONTENT_TYPE).content(requestBody))
+          .andExpect(status().isNotFound())
+          .andReturn().getResponse().getContentAsString();
+
+      ProblemDetail actualResponseBody = mapper.readValue(actualContent, ProblemDetail.class);
+
+      Assertions.assertThat(actualResponseBody).isNotNull();
+      Assertions.assertThat(actualResponseBody.getTitle()).isNotNull().isEqualTo("Not Found");
+      Assertions.assertThat(actualResponseBody.getDetail()).isNotNull()
+          .isEqualTo("Statement not found");
+      Assertions.assertThat(actualResponseBody.getStatus()).isEqualTo(404);
     }
 
   }
