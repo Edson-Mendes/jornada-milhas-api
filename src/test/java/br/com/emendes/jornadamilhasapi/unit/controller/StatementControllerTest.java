@@ -50,7 +50,7 @@ class StatementControllerTest {
   @DisplayName("Tests for save endpoint")
   class SaveEndpoint {
 
-    private final String urlTemplate = "/api/statements";
+    private final String URL_TEMPLATE = "/api/statements";
 
     @Test
     @DisplayName("save must return status 201 and StatementResponse when save successfully")
@@ -66,7 +66,7 @@ class StatementControllerTest {
           }
           """;
 
-      String actualContent = mockMvc.perform(post(urlTemplate).contentType(CONTENT_TYPE).content(requestBody))
+      String actualContent = mockMvc.perform(post(URL_TEMPLATE).contentType(CONTENT_TYPE).content(requestBody))
           .andExpect(status().isCreated())
           .andReturn().getResponse().getContentAsString();
 
@@ -93,7 +93,7 @@ class StatementControllerTest {
           }
           """;
 
-      String actualContent = mockMvc.perform(post(urlTemplate).contentType(CONTENT_TYPE).content(requestBody))
+      String actualContent = mockMvc.perform(post(URL_TEMPLATE).contentType(CONTENT_TYPE).content(requestBody))
           .andExpect(status().isBadRequest())
           .andReturn().getResponse().getContentAsString();
 
@@ -121,7 +121,6 @@ class StatementControllerTest {
   @DisplayName("Tests for fetch endpoint")
   class FetchEndpoint {
 
-    private final String urlTemplate = "/api/statements";
     private final Pageable PAGEABLE_DEFAULT = PageRequest.of(0, 10);
 
     @Test
@@ -130,7 +129,8 @@ class StatementControllerTest {
       BDDMockito.when(statementServiceMock.fetch(PAGEABLE_DEFAULT))
           .thenReturn(new PageImpl<>(List.of(StatementFaker.statementResponse()), PAGEABLE_DEFAULT, 1));
 
-      String actualContent = mockMvc.perform(get(urlTemplate))
+      String URL_TEMPLATE = "/api/statements";
+      String actualContent = mockMvc.perform(get(URL_TEMPLATE))
           .andExpect(status().isOk())
           .andReturn().getResponse().getContentAsString();
 
@@ -191,7 +191,7 @@ class StatementControllerTest {
     @DisplayName("findById must return status 404 and ProblemDetail when not find statement")
     void findById_MustReturnStatus404AndProblemDetail_WhenNotFindStatement() throws Exception {
       BDDMockito.given(statementServiceMock.findById(any()))
-              .willThrow(new ResourceNotFoundException("Statement not found"));
+          .willThrow(new ResourceNotFoundException("Statement not found"));
 
       String actualContent = mockMvc
           .perform(get(URL_TEMPLATE, "1234567890abcdef12345678"))
@@ -205,6 +205,29 @@ class StatementControllerTest {
       Assertions.assertThat(actualResponseBody.getDetail()).isNotNull()
           .isEqualTo("Statement not found");
       Assertions.assertThat(actualResponseBody.getStatus()).isEqualTo(404);
+    }
+
+  }
+
+  @Nested
+  @DisplayName("Tests for fetchLast endpoint")
+  class FetchLastEndpoint {
+
+    @Test
+    @DisplayName("fetchLast must return status 200 and List<StatementResponse> when found successfully")
+    void fetchLast_MustReturnStatus200AndListStatementResponse_WhenFoundSuccessfully() throws Exception {
+      StatementResponse statementResponse = StatementFaker.statementResponse();
+      BDDMockito.when(statementServiceMock.fetchLast(3))
+          .thenReturn(List.of(statementResponse, statementResponse, statementResponse));
+
+      String actualContent = mockMvc.perform(get("/api/statements/home"))
+          .andExpect(status().isOk())
+          .andReturn().getResponse().getContentAsString();
+
+      List<StatementResponse> actualResponseBody = mapper.readValue(actualContent, new TypeReference<>() {
+      });
+
+      Assertions.assertThat(actualResponseBody).isNotNull().hasSize(3);
     }
 
   }
