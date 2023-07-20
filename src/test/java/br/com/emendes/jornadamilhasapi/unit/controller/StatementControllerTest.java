@@ -342,4 +342,54 @@ class StatementControllerTest {
 
   }
 
+  @Nested
+  @DisplayName("Tests for delete endpoint")
+  class DeleteEndpoint {
+
+    private static final String URL_TEMPLATE = "/api/statements/{id}";
+
+    @Test
+    @DisplayName("delete must return status 204 when delete successfully")
+    void delete_MustReturnStatus204_WhenDeleteSuccessfully() throws Exception {
+      mockMvc.perform(delete(URL_TEMPLATE, "1234567890abcdef12345678"))
+          .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("delete must return status 400 and ProblemDetail when id is invalid")
+    void delete_MustReturnStatus400AndProblemDetail_WhenIdIsInvalid() throws Exception {
+      String actualContent = mockMvc.perform(delete(URL_TEMPLATE, "1234567890X"))
+          .andExpect(status().isBadRequest())
+          .andReturn().getResponse().getContentAsString();
+
+      ProblemDetail actualResponseBody = mapper.readValue(actualContent, ProblemDetail.class);
+
+      Assertions.assertThat(actualResponseBody).isNotNull();
+      Assertions.assertThat(actualResponseBody.getTitle()).isNotNull().isEqualTo("Bad Request");
+      Assertions.assertThat(actualResponseBody.getDetail()).isNotNull()
+          .contains("id must be hexadecimal value", "id must be 24 characters long");
+      Assertions.assertThat(actualResponseBody.getStatus()).isEqualTo(400);
+    }
+
+    @Test
+    @DisplayName("delete must return status 404 and ProblemDetail when not find statement")
+    void delete_MustReturnStatus404AndProblemDetail_WhenNotFindStatement() throws Exception {
+      BDDMockito.willThrow(new ResourceNotFoundException("Statement not found"))
+          .given(statementServiceMock).delete(any());
+
+      String actualContent = mockMvc.perform(delete(URL_TEMPLATE, "1234567890abcdef12345678"))
+          .andExpect(status().isNotFound())
+          .andReturn().getResponse().getContentAsString();
+
+      ProblemDetail actualResponseBody = mapper.readValue(actualContent, ProblemDetail.class);
+
+      Assertions.assertThat(actualResponseBody).isNotNull();
+      Assertions.assertThat(actualResponseBody.getTitle()).isNotNull().isEqualTo("Not Found");
+      Assertions.assertThat(actualResponseBody.getDetail()).isNotNull()
+          .isEqualTo("Statement not found");
+      Assertions.assertThat(actualResponseBody.getStatus()).isEqualTo(404);
+    }
+
+  }
+
 }
