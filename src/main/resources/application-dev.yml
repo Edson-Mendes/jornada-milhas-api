@@ -1,7 +1,15 @@
+# Datasource properties
 spring:
   data:
     mongodb:
       uri: mongodb://user:1234@localhost:27017/jornada-milhas-db
+
+# Multipart properties
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 10MB
 
 logging:
   level:

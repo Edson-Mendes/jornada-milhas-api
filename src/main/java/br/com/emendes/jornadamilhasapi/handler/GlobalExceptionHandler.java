@@ -1,5 +1,6 @@
 package br.com.emendes.jornadamilhasapi.handler;
 
+import br.com.emendes.jornadamilhasapi.exception.FileAccessException;
 import br.com.emendes.jornadamilhasapi.exception.ResourceNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -77,4 +78,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     return ResponseEntity.status(status).body(problemDetail);
   }
+
+  /**
+   * Trata {@link FileAccessException}.
+   */
+  @ExceptionHandler(FileAccessException.class)
+  public ResponseEntity<ProblemDetail> handleFileAccess(FileAccessException ex) {
+    HttpStatusCode status = HttpStatusCode.valueOf(500);
+
+    ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, ex.getMessage());
+
+    URI uri = URI.create("http://non-implemented.com/file-access");
+    problemDetail.setType(uri);
+
+    return ResponseEntity.status(status).body(problemDetail);
+  }
+
 }

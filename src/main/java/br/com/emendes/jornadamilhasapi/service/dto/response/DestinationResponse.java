@@ -3,6 +3,7 @@ package br.com.emendes.jornadamilhasapi.service.dto.response;
 import lombok.Builder;
 
 import java.math.BigDecimal;
+import java.net.URI;
 import java.time.LocalDateTime;
 
 /**
@@ -13,7 +14,7 @@ public record DestinationResponse(
     String id,
     String name,
     BigDecimal price,
-    String urlImage,
+    URI urlImage,
     LocalDateTime createdAt
 
 ) {
