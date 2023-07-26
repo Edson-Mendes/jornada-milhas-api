@@ -1,4 +1,4 @@
-package br.com.emendes.jornadamilhasapi.service.impl;
+package br.com.emendes.jornadamilhasapi.mapper.impl;
 
 import br.com.emendes.jornadamilhasapi.exception.FileAccessException;
 import br.com.emendes.jornadamilhasapi.mapper.ImageMapper;
@@ -8,7 +8,6 @@ import org.bson.types.Binary;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.UriBuilder;
 
 import java.io.IOException;
 import java.net.URI;

@@ -1,5 +1,6 @@
 package br.com.emendes.jornadamilhasapi.service;
 
+import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
@@ -16,5 +17,13 @@ public interface ImageService {
    * @return url usada para recuperar a imagem salva.
    */
   URI save(MultipartFile destinationImage);
+
+  /**
+   * Busca imagem por id.
+   *
+   * @param imageId identificador da imagem.
+   * @return Resource com a imagem buscada.
+   */
+  Resource findById(String imageId);
 
 }
