@@ -1,6 +1,5 @@
 package br.com.emendes.jornadamilhasapi.service.impl;
 
-import br.com.emendes.jornadamilhasapi.exception.ImageNotValidException;
 import br.com.emendes.jornadamilhasapi.exception.ResourceNotFoundException;
 import br.com.emendes.jornadamilhasapi.mapper.ImageMapper;
 import br.com.emendes.jornadamilhasapi.model.Image;
@@ -10,12 +9,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
-import java.util.Objects;
 
 /**
  * Implementação de {@link ImageService}.
@@ -37,10 +34,6 @@ public class ImageServiceImpl implements ImageService {
   public URI save(MultipartFile destinationImage) {
     log.info("attempt to save image");
 
-    if (!isFileValid(destinationImage)) {
-      throw new ImageNotValidException("Imagem inválida");
-    }
-
     Image image = imageMapper.toImage(destinationImage);
     imageRepository.save(image);
 
@@ -60,23 +53,6 @@ public class ImageServiceImpl implements ImageService {
 
     log.info("image with id: {} found successful", imageId);
     return new ByteArrayResource(image.getContent().getData());
-  }
-
-  private boolean isFileValid(MultipartFile file) {
-    return !file.isEmpty() && isValidSize(file) && (isJPEG(file)
-        || isPNG(file));
-  }
-
-  private boolean isJPEG(MultipartFile file) {
-    return Objects.equals(file.getContentType(), MediaType.IMAGE_JPEG_VALUE);
-  }
-
-  private boolean isPNG(MultipartFile file) {
-    return Objects.equals(file.getContentType(), MediaType.IMAGE_PNG_VALUE);
-  }
-
-  private boolean isValidSize(MultipartFile file) {
-    return file.getSize() > 0 && file.getSize() <= FILE_SIZE;
   }
 
 }
