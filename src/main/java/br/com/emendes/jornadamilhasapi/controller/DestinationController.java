@@ -3,6 +3,7 @@ package br.com.emendes.jornadamilhasapi.controller;
 import br.com.emendes.jornadamilhasapi.service.DestinationService;
 import br.com.emendes.jornadamilhasapi.service.dto.request.DestinationRequest;
 import br.com.emendes.jornadamilhasapi.service.dto.response.DestinationResponse;
+import br.com.emendes.jornadamilhasapi.validation.annotation.IdValidation;
 import br.com.emendes.jornadamilhasapi.validation.annotation.ImageValidation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,12 +23,18 @@ import java.net.URI;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/destinations")
+@RequestMapping(value = "/api/destinations", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class DestinationController {
 
   private final DestinationService destinationService;
 
-  @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
+  /**
+   * Método responsável por POST /api/destinations.
+   *
+   * @param destinationRequest que contém as informações do Destination a ser salvo
+   * @param image              arquivo de imagem do destino.
+   */
+  @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
   public ResponseEntity<DestinationResponse> save(
       @RequestPart(name = "destination_info") @Valid DestinationRequest destinationRequest,
       @RequestPart(name = "destination_image") @ImageValidation MultipartFile image,
@@ -36,6 +43,16 @@ public class DestinationController {
     URI uri = uriBuilder.path("/api/destinations/{id}").build(destinationResponse.id());
 
     return ResponseEntity.created(uri).body(destinationResponse);
+  }
+
+  /**
+   * Método responsável por GET /api/destinations/{id}.
+   *
+   * @param destinationId identificador do Destination a ser buscado.
+   */
+  @GetMapping("/{id}")
+  public ResponseEntity<DestinationResponse> findById(@PathVariable(name = "id") @IdValidation String destinationId) {
+    return ResponseEntity.ok(destinationService.findById(destinationId));
   }
 
 }

@@ -56,7 +56,7 @@ public class StatementController {
   /**
    * Método responsável por GET /api/statements/{id}.
    *
-   * @param statementId identificador do Statement a ser atualizado.
+   * @param statementId identificador do Statement a ser buscado.
    */
   @GetMapping("/{id}")
   public ResponseEntity<StatementResponse> findById(

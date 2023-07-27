@@ -13,9 +13,17 @@ public interface DestinationService {
    * Salva um destino no sistema.
    *
    * @param destinationRequest DTO contendo as informações do destino a ser salvo.
-   * @param destinationImage file contendo uma imagem (jpg ou png) do destino.
+   * @param destinationImage   file contendo uma imagem (jpg ou png) do destino.
    * @return {@link DestinationResponse} contendo informações do destino salvo.
    */
   DestinationResponse save(DestinationRequest destinationRequest, MultipartFile destinationImage);
+
+  /**
+   * Busca um destino por id.
+   *
+   * @param destinationId identificador do destino.
+   * @return {@link DestinationResponse} contendo as informações do destino solicitado.
+   */
+  DestinationResponse findById(String destinationId);
 
 }
