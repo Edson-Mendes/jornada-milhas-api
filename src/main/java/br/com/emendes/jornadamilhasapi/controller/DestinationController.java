@@ -49,6 +49,21 @@ public class DestinationController {
   }
 
   /**
+   * Método responsável por GET /api/destinations.
+   *
+   * @param pageable contém as informações de como a busca será paginada.
+   */
+  @GetMapping
+  public ResponseEntity<Page<DestinationResponse>> fetch(
+      @PageableDefault Pageable pageable,
+      @RequestParam(value = "name", required = false) String name) {
+    if (name == null) {
+      return ResponseEntity.ok(destinationService.fetch(pageable));
+    }
+    return ResponseEntity.ok(destinationService.findByName(pageable, name));
+  }
+
+  /**
    * Método responsável por GET /api/destinations/{id}.
    *
    * @param destinationId identificador do Destination a ser buscado.
@@ -56,16 +71,6 @@ public class DestinationController {
   @GetMapping("/{id}")
   public ResponseEntity<DestinationResponse> findById(@PathVariable(name = "id") @IdValidation String destinationId) {
     return ResponseEntity.ok(destinationService.findById(destinationId));
-  }
-
-  /**
-   * Método responsável por GET /api/destinations.
-   *
-   * @param pageable contém as informações de como a busca será paginada.
-   */
-  @GetMapping
-  public ResponseEntity<Page<DestinationResponse>> fetch(@PageableDefault Pageable pageable) {
-    return ResponseEntity.ok(destinationService.fetch(pageable));
   }
 
 }

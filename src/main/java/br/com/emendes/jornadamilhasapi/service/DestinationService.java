@@ -21,19 +21,28 @@ public interface DestinationService {
   DestinationResponse save(DestinationRequest destinationRequest, MultipartFile destinationImage);
 
   /**
-   * Busca um destino por id.
-   *
-   * @param destinationId identificador do destino.
-   * @return {@link DestinationResponse} contendo as informações do destino solicitado.
-   */
-  DestinationResponse findById(String destinationId);
-
-  /**
    * Busca páginada de Destinos..
    *
    * @param pageable contendo o número da página e a quantidade de elementos a ser buscado.
    * @return {@code Page<DestinationResponse>}
    */
   Page<DestinationResponse> fetch(Pageable pageable);
+
+  /**
+   * Busca páginada de Destinos por name.
+   *
+   * @param pageable contendo o número da página e a quantidade de elementos a ser buscado.
+   * @param name     nome do destino a ser buscado.
+   * @return {@code Page<DestinationResponse>}
+   */
+  Page<DestinationResponse> findByName(Pageable pageable, String name);
+
+  /**
+   * Busca um destino por id.
+   *
+   * @param destinationId identificador do destino.
+   * @return {@link DestinationResponse} contendo as informações do destino solicitado.
+   */
+  DestinationResponse findById(String destinationId);
 
 }

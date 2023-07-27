@@ -46,6 +46,30 @@ public class DestinationServiceImpl implements DestinationService {
   }
 
   @Override
+  public Page<DestinationResponse> fetch(Pageable pageable) {
+    log.info("fetching page: {} and size: {} of Destinations.", pageable.getPageNumber(), pageable.getPageSize());
+
+    return destinationRepository.findAll(pageable).map(destinationMapper::toDestinationResponse);
+  }
+
+  @Override
+  public Page<DestinationResponse> findByName(Pageable pageable, String name) {
+    log.info(
+        "fetching page: {} and size: {} of Destinations with name: {}.",
+        pageable.getPageNumber(), pageable.getPageSize(), name);
+
+    String regexName = String.format(".*%s.*", name);
+
+    Page<Destination> destinationPage = destinationRepository.findByName(pageable, regexName);
+
+    if (destinationPage.getTotalElements() == 0) {
+      throw new ResourceNotFoundException(String.format("Destinations with name containing {%s} not found", name));
+    }
+
+    return destinationPage.map(destinationMapper::toDestinationResponse);
+  }
+
+  @Override
   public DestinationResponse findById(String destinationId) {
     log.info("attempt to fetch statement with id: {}", destinationId);
 
@@ -53,13 +77,6 @@ public class DestinationServiceImpl implements DestinationService {
 
     log.info("statement found successful with id: {}", destinationId);
     return destinationMapper.toDestinationResponse(destination);
-  }
-
-  @Override
-  public Page<DestinationResponse> fetch(Pageable pageable) {
-    log.info("fetching page: {} and size: {} of Statements.", pageable.getPageNumber(), pageable.getPageSize());
-
-    return destinationRepository.findAll(pageable).map(destinationMapper::toDestinationResponse);
   }
 
   /**
