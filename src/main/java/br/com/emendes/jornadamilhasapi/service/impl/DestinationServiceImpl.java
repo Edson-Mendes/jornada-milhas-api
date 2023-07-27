@@ -10,6 +10,8 @@ import br.com.emendes.jornadamilhasapi.service.dto.request.DestinationRequest;
 import br.com.emendes.jornadamilhasapi.service.dto.response.DestinationResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -51,6 +53,13 @@ public class DestinationServiceImpl implements DestinationService {
 
     log.info("statement found successful with id: {}", destinationId);
     return destinationMapper.toDestinationResponse(destination);
+  }
+
+  @Override
+  public Page<DestinationResponse> fetch(Pageable pageable) {
+    log.info("fetching page: {} and size: {} of Statements.", pageable.getPageNumber(), pageable.getPageSize());
+
+    return destinationRepository.findAll(pageable).map(destinationMapper::toDestinationResponse);
   }
 
   /**

@@ -2,6 +2,8 @@ package br.com.emendes.jornadamilhasapi.service;
 
 import br.com.emendes.jornadamilhasapi.service.dto.request.DestinationRequest;
 import br.com.emendes.jornadamilhasapi.service.dto.response.DestinationResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -25,5 +27,13 @@ public interface DestinationService {
    * @return {@link DestinationResponse} contendo as informações do destino solicitado.
    */
   DestinationResponse findById(String destinationId);
+
+  /**
+   * Busca páginada de Destinos..
+   *
+   * @param pageable contendo o número da página e a quantidade de elementos a ser buscado.
+   * @return {@code Page<DestinationResponse>}
+   */
+  Page<DestinationResponse> fetch(Pageable pageable);
 
 }

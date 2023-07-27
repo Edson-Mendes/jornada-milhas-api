@@ -7,6 +7,9 @@ import br.com.emendes.jornadamilhasapi.validation.annotation.IdValidation;
 import br.com.emendes.jornadamilhasapi.validation.annotation.ImageValidation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -53,6 +56,16 @@ public class DestinationController {
   @GetMapping("/{id}")
   public ResponseEntity<DestinationResponse> findById(@PathVariable(name = "id") @IdValidation String destinationId) {
     return ResponseEntity.ok(destinationService.findById(destinationId));
+  }
+
+  /**
+   * Método responsável por GET /api/destinations.
+   *
+   * @param pageable contém as informações de como a busca será paginada.
+   */
+  @GetMapping
+  public ResponseEntity<Page<DestinationResponse>> fetch(@PageableDefault Pageable pageable) {
+    return ResponseEntity.ok(destinationService.fetch(pageable));
   }
 
 }
