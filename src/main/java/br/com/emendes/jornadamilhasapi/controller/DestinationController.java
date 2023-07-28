@@ -73,4 +73,13 @@ public class DestinationController {
     return ResponseEntity.ok(destinationService.findById(destinationId));
   }
 
+  @PutMapping("/{id}")
+  public ResponseEntity<Void> update(
+      @PathVariable(name = "id") @IdValidation String destinationId,
+      @RequestPart(name = "destination_info") @Valid DestinationRequest destinationRequest,
+      @RequestPart(name = "destination_image", required = false) @ImageValidation MultipartFile image) {
+    destinationService.update(destinationId, destinationRequest, image);
+    return ResponseEntity.noContent().build();
+  }
+
 }

@@ -20,8 +20,18 @@ public interface DestinationMapper {
 
   /**
    * Mapeia o document Destination para o DTO {@link DestinationResponse}.
+   *
    * @param destination que será mapeado para DestinationResponse.
    * @return {@link DestinationResponse} contedo informações sobre Destination.
    */
   DestinationResponse toDestinationResponse(Destination destination);
+
+  /**
+   * Mescla as informações dentro de destination com as informações contidas em destinationRequest.
+   *
+   * @param destination        que receberá as novas informações.
+   * @param destinationRequest que contém as novas informações.
+   */
+  void merge(Destination destination, DestinationRequest destinationRequest);
+
 }

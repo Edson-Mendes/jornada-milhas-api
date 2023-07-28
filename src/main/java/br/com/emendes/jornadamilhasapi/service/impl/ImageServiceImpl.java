@@ -55,4 +55,10 @@ public class ImageServiceImpl implements ImageService {
     return new ByteArrayResource(image.getContent().getData());
   }
 
+  @Override
+  public void delete(String imageId) {
+    log.info("attempt to delete image with id: {}", imageId);
+    imageRepository.deleteById(imageId);
+  }
+
 }

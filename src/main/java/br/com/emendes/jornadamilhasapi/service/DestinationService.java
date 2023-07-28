@@ -45,4 +45,13 @@ public interface DestinationService {
    */
   DestinationResponse findById(String destinationId);
 
+  /**
+   * Atualiza um destino por id.
+   *
+   * @param destinationId      identificador do Destino a ser atualizado.
+   * @param destinationRequest contendo as novas informações do Destino.
+   * @param destinationImage   arquivo contendo a nova  imagem do Destino.
+   */
+  void update(String destinationId, DestinationRequest destinationRequest, MultipartFile destinationImage);
+
 }

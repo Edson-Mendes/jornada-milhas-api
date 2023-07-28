@@ -28,4 +28,15 @@ public class Destination {
   private URI urlImage;
   private LocalDateTime createdAt;
 
+  /**
+   * Extrai o id da imagem da URI urlImage.
+   *
+   * @return identificador da imagem o qual urlImage está associado.
+   */
+  public String retrieveImageId() {
+    String[] paths = urlImage.getPath().split("/");
+
+    return paths[paths.length - 1];
+  }
+
 }

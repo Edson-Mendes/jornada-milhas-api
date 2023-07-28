@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
@@ -71,12 +72,34 @@ public class DestinationServiceImpl implements DestinationService {
 
   @Override
   public DestinationResponse findById(String destinationId) {
-    log.info("attempt to fetch statement with id: {}", destinationId);
+    log.info("attempt to fetch destination with id: {}", destinationId);
 
     Destination destination = findDestinationById(destinationId);
 
-    log.info("statement found successful with id: {}", destinationId);
+    log.info("destination found successful with id: {}", destinationId);
     return destinationMapper.toDestinationResponse(destination);
+  }
+
+  @Override
+  public void update(String destinationId, DestinationRequest destinationRequest, MultipartFile destinationImage) {
+    log.info("attempt to update destination with id: {}", destinationId);
+
+    Destination destination = findDestinationById(destinationId);
+
+    destinationMapper.merge(destination, destinationRequest);
+
+    if (destinationImage != null) {
+      URI newImageURI = imageService.save(destinationImage);
+
+      String imageId = destination.retrieveImageId();
+      log.info("imageId: {}", imageId);
+      imageService.delete(imageId);
+
+      destination.setUrlImage(newImageURI);
+    }
+
+    destinationRepository.save(destination);
+    log.info("destination updated successful with id: {}", destinationId);
   }
 
   /**

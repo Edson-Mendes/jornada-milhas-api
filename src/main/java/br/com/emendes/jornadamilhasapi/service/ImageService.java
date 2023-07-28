@@ -26,4 +26,11 @@ public interface ImageService {
    */
   Resource findById(String imageId);
 
+  /**
+   * Deleta imagem por id.
+   *
+   * @param imageId identificador da imagem.
+   */
+  void delete(String imageId);
+
 }

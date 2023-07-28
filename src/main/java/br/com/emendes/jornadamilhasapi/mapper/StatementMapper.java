@@ -27,9 +27,9 @@ public interface StatementMapper {
   StatementResponse toStatementResponse(Statement statement);
 
   /**
-   * Mescla as informações dentro de statement com as informações contidas em createStatementRequest.
+   * Mescla as informações dentro de statement com as informações contidas em statementRequest.
    *
-   * @param statement              que receberá as novas informações.
+   * @param statement        que receberá as novas informações.
    * @param statementRequest que contém as novas informações.
    */
   void merge(Statement statement, StatementRequest statementRequest);
