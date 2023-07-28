@@ -73,12 +73,30 @@ public class DestinationController {
     return ResponseEntity.ok(destinationService.findById(destinationId));
   }
 
+  /**
+   * Método responsável por PUT /api/destinations/{id}.
+   *
+   * @param destinationId      identificador do Destination a ser buscado.
+   * @param destinationRequest que contém as novas informações do Destination.
+   * @param image              arquivo de imagem do destino.
+   */
   @PutMapping("/{id}")
   public ResponseEntity<Void> update(
       @PathVariable(name = "id") @IdValidation String destinationId,
       @RequestPart(name = "destination_info") @Valid DestinationRequest destinationRequest,
       @RequestPart(name = "destination_image", required = false) @ImageValidation MultipartFile image) {
     destinationService.update(destinationId, destinationRequest, image);
+    return ResponseEntity.noContent().build();
+  }
+
+  /**
+   * Método responsável por DELETE /api/destinations/{id}
+   *
+   * @param destinationId identificador do Destination a ser deletado.
+   */
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> delete(@PathVariable(name = "id") @IdValidation String destinationId) {
+    destinationService.delete(destinationId);
     return ResponseEntity.noContent().build();
   }
 

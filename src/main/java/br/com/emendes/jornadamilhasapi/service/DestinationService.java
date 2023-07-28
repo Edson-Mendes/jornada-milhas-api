@@ -54,4 +54,11 @@ public interface DestinationService {
    */
   void update(String destinationId, DestinationRequest destinationRequest, MultipartFile destinationImage);
 
+  /**
+   * Deleta um destination por id.
+   *
+   * @param destinationId identificador do Destination a ser deletado.
+   */
+  void delete(String destinationId);
+
 }

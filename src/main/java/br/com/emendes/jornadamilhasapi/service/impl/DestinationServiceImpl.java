@@ -102,6 +102,19 @@ public class DestinationServiceImpl implements DestinationService {
     log.info("destination updated successful with id: {}", destinationId);
   }
 
+  @Override
+  public void delete(String destinationId) {
+    log.info("attempt to delete destination with id: {}", destinationId);
+
+    Destination destination = findDestinationById(destinationId);
+
+    String imageId = destination.retrieveImageId();
+    imageService.delete(imageId);
+    destinationRepository.delete(destination);
+
+    log.info("destination with id: {} deleted successful", destinationId);
+  }
+
   /**
    * Busca Destination por id.
    *
