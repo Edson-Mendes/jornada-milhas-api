@@ -76,6 +76,7 @@ class DestinationControllerTest {
 
       MockMultipartFile destinationImage = new MockMultipartFile(
           "destination_image", "veneza01.jpg", MediaType.IMAGE_JPEG_VALUE, image);
+      image.close();
 
       String actualContent = mockMvc.perform(multipart(URL_TEMPLATE)
               .file(destinationImage)
@@ -113,6 +114,7 @@ class DestinationControllerTest {
 
       MockMultipartFile destinationImage = new MockMultipartFile(
           "destination_image", "veneza01.jpg", MediaType.IMAGE_JPEG_VALUE, image);
+      image.close();
 
       String actualContent = mockMvc.perform(multipart(URL_TEMPLATE)
               .file(destinationImage)
@@ -157,6 +159,7 @@ class DestinationControllerTest {
 
       MockMultipartFile destinationImage = new MockMultipartFile(
           "destination_image", "veneza02.gif", MediaType.IMAGE_GIF_VALUE, image);
+      image.close();
 
       String actualContent = mockMvc.perform(multipart(URL_TEMPLATE)
               .file(destinationImage)
@@ -348,6 +351,7 @@ class DestinationControllerTest {
 
       MockMultipartFile destinationImage = new MockMultipartFile(
           "destination_image", "veneza01.jpg", MediaType.IMAGE_JPEG_VALUE, image);
+      image.close();
 
       mockMvc.perform(multipart(HttpMethod.PUT, URL_TEMPLATE, "abcdef1234567890abcdef12")
               .file(destinationInfo)
@@ -374,6 +378,7 @@ class DestinationControllerTest {
 
       MockMultipartFile destinationImage = new MockMultipartFile(
           "destination_image", "veneza01.jpg", MediaType.IMAGE_JPEG_VALUE, image);
+      image.close();
 
       String actualContent = mockMvc.perform(multipart(HttpMethod.PUT, URL_TEMPLATE, "abcdef1234567890abcdef12")
               .file(destinationImage)
@@ -418,6 +423,7 @@ class DestinationControllerTest {
 
       MockMultipartFile destinationImage = new MockMultipartFile(
           "destination_image", "veneza02.gif", MediaType.IMAGE_GIF_VALUE, image);
+      image.close();
 
       String actualContent = mockMvc.perform(multipart(HttpMethod.PUT, URL_TEMPLATE, "abcdef1234567890abcdef12")
               .file(destinationImage)
