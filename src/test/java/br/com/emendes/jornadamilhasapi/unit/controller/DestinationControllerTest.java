@@ -1,9 +1,12 @@
 package br.com.emendes.jornadamilhasapi.unit.controller;
 
 import br.com.emendes.jornadamilhasapi.controller.DestinationController;
+import br.com.emendes.jornadamilhasapi.exception.ResourceNotFoundException;
 import br.com.emendes.jornadamilhasapi.service.DestinationService;
 import br.com.emendes.jornadamilhasapi.service.dto.response.DestinationResponse;
+import br.com.emendes.jornadamilhasapi.util.PageableResponse;
 import br.com.emendes.jornadamilhasapi.util.faker.DestinationFaker;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -13,6 +16,10 @@ import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
 import org.springframework.mock.web.MockMultipartFile;
@@ -21,8 +28,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -169,6 +178,67 @@ class DestinationControllerTest {
       Assertions.assertThat(actualResponseBody.getStatus()).isEqualTo(400);
     }
 
+  }
+
+  @Nested
+  @DisplayName("Tests for fetch endpoint")
+  class FetchEndpoint {
+
+    private final String URL_TEMPLATE = "/api/destinations";
+    private final Pageable PAGEABLE_DEFAULT = PageRequest.of(0, 10);
+
+    @Test
+    @DisplayName("fetch must return status 200 and Page<DestinationResponse> when fetch successfully")
+    void fetch_MustReturnStatus200AndPageDestinationResponse_WhenFetchSuccessfully() throws Exception {
+      BDDMockito.when(destinationServiceMock.fetch(PAGEABLE_DEFAULT))
+          .thenReturn(new PageImpl<>(List.of(DestinationFaker.destinationResponse()), PAGEABLE_DEFAULT, 1));
+
+      String actualContent = mockMvc.perform(get(URL_TEMPLATE))
+          .andExpect(status().isOk())
+          .andReturn().getResponse().getContentAsString();
+
+      Page<DestinationResponse> actualResponseBody = mapper
+          .readValue(actualContent, new TypeReference<PageableResponse<DestinationResponse>>() {
+          });
+
+      Assertions.assertThat(actualResponseBody).isNotNull().isNotEmpty().hasSize(1);
+    }
+
+    @Test
+    @DisplayName("fetch must return status 200 and Page<DestinationResponse> when fetch by name successfully")
+    void fetch_MustReturnStatus200AndPageDestinationResponse_WhenFetchByNameSuccessfully() throws Exception {
+      BDDMockito.when(destinationServiceMock.findByName(PAGEABLE_DEFAULT, "Veneza"))
+          .thenReturn(new PageImpl<>(List.of(DestinationFaker.destinationResponse()), PAGEABLE_DEFAULT, 1));
+
+      String actualContent = mockMvc.perform(get(URL_TEMPLATE).param("name", "Veneza"))
+          .andExpect(status().isOk())
+          .andReturn().getResponse().getContentAsString();
+
+      Page<DestinationResponse> actualResponseBody = mapper
+          .readValue(actualContent, new TypeReference<PageableResponse<DestinationResponse>>() {
+          });
+
+      Assertions.assertThat(actualResponseBody).isNotNull().isNotEmpty().hasSize(1);
+    }
+
+    @Test
+    @DisplayName("fetch must return status 404 and ProblemDetail when not found destination with name containing Veneza")
+    void fetch_MustReturnStatus404AndProblemDetail_WhenNotFoundDestinationWithNameContainingVeneza() throws Exception {
+      BDDMockito.given(destinationServiceMock.findByName(PAGEABLE_DEFAULT, "Veneza"))
+          .willThrow(new ResourceNotFoundException("Destinations with name containing {Veneza} not found"));
+
+      String actualContent = mockMvc.perform(get(URL_TEMPLATE).param("name", "Veneza"))
+          .andExpect(status().isNotFound())
+          .andReturn().getResponse().getContentAsString();
+
+      ProblemDetail actualResponseBody = mapper.readValue(actualContent, ProblemDetail.class);
+
+      Assertions.assertThat(actualResponseBody).isNotNull();
+      Assertions.assertThat(actualResponseBody.getTitle()).isNotNull().isEqualTo("Not Found");
+      Assertions.assertThat(actualResponseBody.getDetail()).isNotNull()
+          .isEqualTo("Destinations with name containing {Veneza} not found");
+      Assertions.assertThat(actualResponseBody.getStatus()).isEqualTo(404);
+    }
   }
 
 }
