@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
 import org.springframework.mock.web.MockMultipartFile;
@@ -81,8 +82,7 @@ class DestinationControllerTest {
               .file(destinationImage)
               .file(destinationInfo)
               .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
-              .accept(MEDIA_TYPE_ACCEPT)
-          )
+              .accept(MEDIA_TYPE_ACCEPT))
           .andExpect(status().isCreated())
           .andReturn().getResponse().getContentAsString();
 
@@ -119,8 +119,7 @@ class DestinationControllerTest {
               .file(destinationImage)
               .file(destinationInfo)
               .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
-              .accept(MEDIA_TYPE_ACCEPT)
-          )
+              .accept(MEDIA_TYPE_ACCEPT))
           .andExpect(status().isBadRequest())
           .andReturn().getResponse().getContentAsString();
 
@@ -164,8 +163,7 @@ class DestinationControllerTest {
               .file(destinationImage)
               .file(destinationInfo)
               .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
-              .accept(MEDIA_TYPE_ACCEPT)
-          )
+              .accept(MEDIA_TYPE_ACCEPT))
           .andExpect(status().isBadRequest())
           .andReturn().getResponse().getContentAsString();
 
@@ -286,13 +284,208 @@ class DestinationControllerTest {
     }
 
     @Test
-    @DisplayName("findById must return status 404 and ProblemDetail when not find statement")
+    @DisplayName("findById must return status 404 and ProblemDetail when not find destination")
     void findById_MustReturnStatus404AndProblemDetail_WhenNotFindDestination() throws Exception {
       BDDMockito.given(destinationServiceMock.findById(any()))
           .willThrow(new ResourceNotFoundException("Destination not found"));
 
       String actualContent = mockMvc
           .perform(get(URL_TEMPLATE, "abcdef1234567890abcdef12"))
+          .andExpect(status().isNotFound())
+          .andReturn().getResponse().getContentAsString();
+
+      ProblemDetail actualResponseBody = mapper.readValue(actualContent, ProblemDetail.class);
+
+      Assertions.assertThat(actualResponseBody).isNotNull();
+      Assertions.assertThat(actualResponseBody.getTitle()).isNotNull().isEqualTo("Not Found");
+      Assertions.assertThat(actualResponseBody.getDetail()).isNotNull()
+          .isEqualTo("Destination not found");
+      Assertions.assertThat(actualResponseBody.getStatus()).isEqualTo(404);
+    }
+
+  }
+
+  @Nested
+  @DisplayName("Tests for update endpoint")
+  class UpdateEndpoint {
+
+    private final String URL_TEMPLATE = "/api/destinations/{id}";
+
+    @Test
+    @DisplayName("update must return status 204 when update destination info successfully")
+    void update_MustReturnStatus204_WhenUpdateDestinationInfoSuccessfully() throws Exception {
+      String destinationJson = """
+          {
+            "name": "Veneza - ITA",
+            "price": 550.00
+          }
+          """;
+
+      MockMultipartFile destinationInfo = new MockMultipartFile(
+          "destination_info", null, MediaType.APPLICATION_JSON_VALUE, destinationJson.getBytes());
+
+
+      mockMvc.perform(multipart(HttpMethod.PUT, URL_TEMPLATE, "abcdef1234567890abcdef12")
+              .file(destinationInfo)
+              .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+              .accept(MEDIA_TYPE_ACCEPT))
+          .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("update must return status 204 when update destination info and image successfully")
+    void update_MustReturnStatus204_WhenUpdateDestinationInfoAndImageSuccessfully() throws Exception {
+      String destinationJson = """
+          {
+            "name": "Veneza - ITA",
+            "price": 550.00
+          }
+          """;
+
+      MockMultipartFile destinationInfo = new MockMultipartFile(
+          "destination_info", null, MediaType.APPLICATION_JSON_VALUE, destinationJson.getBytes());
+
+      InputStream image = new FileInputStream("src/test/resources/image/veneza01.jpg");
+
+      MockMultipartFile destinationImage = new MockMultipartFile(
+          "destination_image", "veneza01.jpg", MediaType.IMAGE_JPEG_VALUE, image);
+
+      mockMvc.perform(multipart(HttpMethod.PUT, URL_TEMPLATE, "abcdef1234567890abcdef12")
+              .file(destinationInfo)
+              .file(destinationImage)
+              .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+              .accept(MEDIA_TYPE_ACCEPT))
+          .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("update must return status 400 and ProblemDetail when destination_info has invalid fields")
+    void update_MustReturnStatus400AndProblemDetail_WhenDestinationInfoHasInvalidFields() throws Exception {
+      String destinationJson = """
+          {
+            "name": "",
+            "price": 550.00
+          }
+          """;
+
+      MockMultipartFile destinationInfo = new MockMultipartFile(
+          "destination_info", null, MediaType.APPLICATION_JSON_VALUE, destinationJson.getBytes());
+
+      InputStream image = new FileInputStream("src/test/resources/image/veneza01.jpg");
+
+      MockMultipartFile destinationImage = new MockMultipartFile(
+          "destination_image", "veneza01.jpg", MediaType.IMAGE_JPEG_VALUE, image);
+
+      String actualContent = mockMvc.perform(multipart(HttpMethod.PUT, URL_TEMPLATE, "abcdef1234567890abcdef12")
+              .file(destinationImage)
+              .file(destinationInfo)
+              .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+              .accept(MEDIA_TYPE_ACCEPT))
+          .andExpect(status().isBadRequest())
+          .andReturn().getResponse().getContentAsString();
+
+      ProblemDetail actualResponseBody = mapper.readValue(actualContent, ProblemDetail.class);
+
+      Assertions.assertThat(actualResponseBody).isNotNull();
+      Assertions.assertThat(actualResponseBody.getTitle()).isNotNull().isEqualTo("Bad Request");
+      Assertions.assertThat(actualResponseBody.getDetail()).isNotNull()
+          .isEqualTo("Invalid field(s)");
+      Assertions.assertThat(actualResponseBody.getStatus()).isEqualTo(400);
+
+      Assertions.assertThat(actualResponseBody.getProperties()).isNotNull();
+
+      String actualFields = (String) actualResponseBody.getProperties().get("fields");
+      String actualMessages = (String) actualResponseBody.getProperties().get("errorMessages");
+
+      Assertions.assertThat(actualFields).isNotNull().contains("name");
+      Assertions.assertThat(actualMessages).isNotNull()
+          .contains("name must not be blank", "name must contain between 2 and 150 characters long");
+    }
+
+    @Test
+    @DisplayName("update must return status 400 and ProblemDetail when destination_image is invalid format")
+    void update_MustReturnStatus400AndProblemDetail_WhenDestinationImageIsInvalidFormat() throws Exception {
+      String destinationJson = """
+          {
+            "name": "Veneza - ITA",
+            "price": 550.00
+          }
+          """;
+
+      MockMultipartFile destinationInfo = new MockMultipartFile(
+          "destination_info", null, MediaType.APPLICATION_JSON_VALUE, destinationJson.getBytes());
+
+      InputStream image = new FileInputStream("src/test/resources/image/veneza02.gif");
+
+      MockMultipartFile destinationImage = new MockMultipartFile(
+          "destination_image", "veneza02.gif", MediaType.IMAGE_GIF_VALUE, image);
+
+      String actualContent = mockMvc.perform(multipart(HttpMethod.PUT, URL_TEMPLATE, "abcdef1234567890abcdef12")
+              .file(destinationImage)
+              .file(destinationInfo)
+              .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+              .accept(MEDIA_TYPE_ACCEPT))
+          .andExpect(status().isBadRequest())
+          .andReturn().getResponse().getContentAsString();
+
+      ProblemDetail actualResponseBody = mapper.readValue(actualContent, ProblemDetail.class);
+
+      Assertions.assertThat(actualResponseBody).isNotNull();
+      Assertions.assertThat(actualResponseBody.getTitle()).isNotNull().isEqualTo("Bad Request");
+      Assertions.assertThat(actualResponseBody.getDetail()).isNotNull()
+          .isEqualTo("file format must be [jpeg, png]");
+      Assertions.assertThat(actualResponseBody.getStatus()).isEqualTo(400);
+    }
+
+    @Test
+    @DisplayName("update must return status 400 and ProblemDetail when id is invalid")
+    void update_MustReturnStatus400AndProblemDetail_WhenIdIsInvalid() throws Exception {
+      String destinationJson = """
+          {
+            "name": "Veneza - ITA",
+            "price": 550.00
+          }
+          """;
+
+      MockMultipartFile destinationInfo = new MockMultipartFile(
+          "destination_info", null, MediaType.APPLICATION_JSON_VALUE, destinationJson.getBytes());
+
+
+      String actualContent = mockMvc.perform(multipart(HttpMethod.PUT, URL_TEMPLATE, "abcdef1234567890ZXS")
+              .file(destinationInfo)
+              .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+              .accept(MEDIA_TYPE_ACCEPT))
+          .andExpect(status().isBadRequest())
+          .andReturn().getResponse().getContentAsString();
+
+      ProblemDetail actualResponseBody = mapper.readValue(actualContent, ProblemDetail.class);
+
+      Assertions.assertThat(actualResponseBody).isNotNull();
+      Assertions.assertThat(actualResponseBody.getTitle()).isNotNull().isEqualTo("Bad Request");
+      Assertions.assertThat(actualResponseBody.getDetail()).isNotNull()
+          .contains("id must be hexadecimal value", "id must be 24 characters long");
+      Assertions.assertThat(actualResponseBody.getStatus()).isEqualTo(400);
+    }
+
+    @Test
+    @DisplayName("update must return status 404 and ProblemDetail when not find destination")
+    void findById_MustReturnStatus404AndProblemDetail_WhenNotFindDestination() throws Exception {
+      BDDMockito.willThrow(new ResourceNotFoundException("Destination not found"))
+          .given(destinationServiceMock).update(any(), any(), any());
+
+      String destinationJson = """
+          {
+            "name": "Veneza - ITA",
+            "price": 550.00
+          }
+          """;
+
+      MockMultipartFile destinationInfo = new MockMultipartFile(
+          "destination_info", null, MediaType.APPLICATION_JSON_VALUE, destinationJson.getBytes());
+
+      String actualContent = mockMvc
+          .perform(multipart(HttpMethod.PUT, URL_TEMPLATE, "abcdef1234567890abcdef12")
+              .file(destinationInfo))
           .andExpect(status().isNotFound())
           .andReturn().getResponse().getContentAsString();
 
