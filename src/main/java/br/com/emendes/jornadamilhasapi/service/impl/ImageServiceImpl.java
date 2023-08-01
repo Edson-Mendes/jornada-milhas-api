@@ -56,9 +56,9 @@ public class ImageServiceImpl implements ImageService {
   }
 
   @Override
-  public void delete(String imageId) {
-    log.info("attempt to delete image with id: {}", imageId);
-    imageRepository.deleteById(imageId);
+  public void deleteAll(List<String> imagesId) {
+    log.info("attempt to delete images with id: {}", imagesId);
+    imageRepository.deleteAllById(imagesId);
   }
 
   /**

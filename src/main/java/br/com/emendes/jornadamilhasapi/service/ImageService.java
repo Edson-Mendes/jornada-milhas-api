@@ -36,10 +36,10 @@ public interface ImageService {
   void update(String imageId, MultipartFile image);
 
   /**
-   * Deleta imagem por id.
+   * Deleta imagens por id.
    *
-   * @param imageId identificador da imagem.
+   * @param imagesId Lista de identificadores das imagens a serem deletadas.
    */
-  void delete(String imageId);
+  void deleteAll(List<String> imagesId);
 
 }

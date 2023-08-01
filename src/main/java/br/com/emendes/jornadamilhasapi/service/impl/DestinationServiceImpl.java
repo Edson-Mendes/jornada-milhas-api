@@ -124,8 +124,8 @@ public class DestinationServiceImpl implements DestinationService {
 
     Destination destination = findDestinationById(destinationId);
 
-    String imageId = destination.retrieveImageId();
-    imageService.delete(imageId);
+    List<String> imagesId = destination.retrieveImagesId();
+    imageService.deleteAll(imagesId);
     destinationRepository.delete(destination);
 
     log.info("destination with id: {} deleted successful", destinationId);

@@ -33,21 +33,6 @@ public class Destination {
   private LocalDateTime createdAt;
 
   /**
-   * Extrai o id da imagem da URI images.
-   *
-   * @return identificador da imagem o qual images está associado.
-   */
-  @Deprecated
-  public String retrieveImageId() {
-    if (images == null || images.isEmpty()) {
-      throw new RuntimeException("has no images");
-    }
-    String[] paths = images.get(0).getPath().split("/");
-
-    return paths[paths.length - 1];
-  }
-
-  /**
    * Recupera os ids das imagens das URIs.
    *
    * @return lista de identificadores das imagensdo destino.
