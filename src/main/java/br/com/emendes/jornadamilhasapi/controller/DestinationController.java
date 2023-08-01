@@ -2,7 +2,8 @@ package br.com.emendes.jornadamilhasapi.controller;
 
 import br.com.emendes.jornadamilhasapi.service.DestinationService;
 import br.com.emendes.jornadamilhasapi.service.dto.request.DestinationRequest;
-import br.com.emendes.jornadamilhasapi.service.dto.response.DestinationResponse;
+import br.com.emendes.jornadamilhasapi.service.dto.response.DestinationDetailsResponse;
+import br.com.emendes.jornadamilhasapi.service.dto.response.DestinationSummaryResponse;
 import br.com.emendes.jornadamilhasapi.validation.annotation.IdValidation;
 import br.com.emendes.jornadamilhasapi.validation.annotation.ImageValidation;
 import jakarta.validation.Valid;
@@ -40,15 +41,15 @@ public class DestinationController {
    * @param image2             arquivo de imagem do destino.
    */
   @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-  public ResponseEntity<DestinationResponse> save(
+  public ResponseEntity<DestinationSummaryResponse> save(
       @RequestPart(name = "destination_info") @Valid DestinationRequest destinationRequest,
       @RequestPart(name = "destination_image1") @ImageValidation MultipartFile image1,
       @RequestPart(name = "destination_image2") @ImageValidation MultipartFile image2,
       UriComponentsBuilder uriBuilder) {
-    DestinationResponse destinationResponse = destinationService.save(destinationRequest, List.of(image1, image2));
-    URI uri = uriBuilder.path("/api/destinations/{id}").build(destinationResponse.id());
+    DestinationSummaryResponse destinationSummaryResponse = destinationService.save(destinationRequest, List.of(image1, image2));
+    URI uri = uriBuilder.path("/api/destinations/{id}").build(destinationSummaryResponse.id());
 
-    return ResponseEntity.created(uri).body(destinationResponse);
+    return ResponseEntity.created(uri).body(destinationSummaryResponse);
   }
 
   /**
@@ -57,7 +58,7 @@ public class DestinationController {
    * @param pageable contém as informações de como a busca será paginada.
    */
   @GetMapping
-  public ResponseEntity<Page<DestinationResponse>> fetch(
+  public ResponseEntity<Page<DestinationSummaryResponse>> fetch(
       @PageableDefault Pageable pageable,
       @RequestParam(value = "name", required = false) String name) {
     if (name == null) {
@@ -72,7 +73,8 @@ public class DestinationController {
    * @param destinationId identificador do Destination a ser buscado.
    */
   @GetMapping("/{id}")
-  public ResponseEntity<DestinationResponse> findById(@PathVariable(name = "id") @IdValidation String destinationId) {
+  public ResponseEntity<DestinationDetailsResponse> findById(
+      @PathVariable(name = "id") @IdValidation String destinationId) {
     return ResponseEntity.ok(destinationService.findById(destinationId));
   }
 

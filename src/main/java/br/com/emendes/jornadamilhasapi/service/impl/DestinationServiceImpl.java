@@ -7,7 +7,8 @@ import br.com.emendes.jornadamilhasapi.repository.DestinationRepository;
 import br.com.emendes.jornadamilhasapi.service.DestinationService;
 import br.com.emendes.jornadamilhasapi.service.ImageService;
 import br.com.emendes.jornadamilhasapi.service.dto.request.DestinationRequest;
-import br.com.emendes.jornadamilhasapi.service.dto.response.DestinationResponse;
+import br.com.emendes.jornadamilhasapi.service.dto.response.DestinationDetailsResponse;
+import br.com.emendes.jornadamilhasapi.service.dto.response.DestinationSummaryResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -32,7 +33,7 @@ public class DestinationServiceImpl implements DestinationService {
   private final DestinationRepository destinationRepository;
 
   @Override
-  public DestinationResponse save(DestinationRequest destinationRequest, List<MultipartFile> destinationImages) {
+  public DestinationSummaryResponse save(DestinationRequest destinationRequest, List<MultipartFile> destinationImages) {
     log.info("attempt to save destination");
 
     Destination destination = destinationMapper.toDestination(destinationRequest);
@@ -48,18 +49,18 @@ public class DestinationServiceImpl implements DestinationService {
     destinationRepository.save(destination);
     log.info("Destination with id: {} saved successful", destination.getId());
 
-    return destinationMapper.toDestinationResponse(destination);
+    return destinationMapper.toDestinationSummaryResponse(destination);
   }
 
   @Override
-  public Page<DestinationResponse> fetch(Pageable pageable) {
+  public Page<DestinationSummaryResponse> fetch(Pageable pageable) {
     log.info("fetching page: {} and size: {} of Destinations.", pageable.getPageNumber(), pageable.getPageSize());
 
-    return destinationRepository.findAll(pageable).map(destinationMapper::toDestinationResponse);
+    return destinationRepository.findAll(pageable).map(destinationMapper::toDestinationSummaryResponse);
   }
 
   @Override
-  public Page<DestinationResponse> findByName(Pageable pageable, String name) {
+  public Page<DestinationSummaryResponse> findByName(Pageable pageable, String name) {
     log.info(
         "fetching page: {} and size: {} of Destinations with name: {}.",
         pageable.getPageNumber(), pageable.getPageSize(), name);
@@ -72,17 +73,17 @@ public class DestinationServiceImpl implements DestinationService {
       throw new ResourceNotFoundException(String.format("Destinations with name containing {%s} not found", name));
     }
 
-    return destinationPage.map(destinationMapper::toDestinationResponse);
+    return destinationPage.map(destinationMapper::toDestinationSummaryResponse);
   }
 
   @Override
-  public DestinationResponse findById(String destinationId) {
+  public DestinationDetailsResponse findById(String destinationId) {
     log.info("attempt to fetch destination with id: {}", destinationId);
 
     Destination destination = findDestinationById(destinationId);
 
     log.info("destination found successful with id: {}", destinationId);
-    return destinationMapper.toDestinationResponse(destination);
+    return destinationMapper.toDestinationDetailsResponse(destination);
   }
 
   @Override

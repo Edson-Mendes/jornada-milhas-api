@@ -1,6 +1,6 @@
 package br.com.emendes.jornadamilhasapi.util.faker;
 
-import br.com.emendes.jornadamilhasapi.service.dto.response.DestinationResponse;
+import br.com.emendes.jornadamilhasapi.service.dto.response.DestinationSummaryResponse;
 
 import java.math.BigDecimal;
 import java.net.URI;
@@ -16,8 +16,8 @@ public class DestinationFaker {
   /**
    * DTO DestinationResponse para ser usado em testes.
    */
-  public static DestinationResponse destinationResponse() {
-    return DestinationResponse.builder()
+  public static DestinationSummaryResponse destinationResponse() {
+    return DestinationSummaryResponse.builder()
         .id("abcdef1234567890abcdef12")
         .name("Veneza - Itália")
         .price(new BigDecimal("500.00"))

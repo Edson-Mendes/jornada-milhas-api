@@ -8,10 +8,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * Record DTO para enviar informações do Destination.
+ * Record DTO para enviar informações mais detalhadas sobre Destination.
  */
 @Builder
-public record DestinationResponse(
+public record DestinationDetailsResponse(
     String id,
     String name,
     BigDecimal price,

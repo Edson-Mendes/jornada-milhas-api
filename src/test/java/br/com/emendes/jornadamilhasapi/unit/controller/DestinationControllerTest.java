@@ -3,7 +3,7 @@ package br.com.emendes.jornadamilhasapi.unit.controller;
 import br.com.emendes.jornadamilhasapi.controller.DestinationController;
 import br.com.emendes.jornadamilhasapi.exception.ResourceNotFoundException;
 import br.com.emendes.jornadamilhasapi.service.DestinationService;
-import br.com.emendes.jornadamilhasapi.service.dto.response.DestinationResponse;
+import br.com.emendes.jornadamilhasapi.service.dto.response.DestinationSummaryResponse;
 import br.com.emendes.jornadamilhasapi.util.PageableResponse;
 import br.com.emendes.jornadamilhasapi.util.faker.DestinationFaker;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -86,7 +86,7 @@ class DestinationControllerTest {
           .andExpect(status().isCreated())
           .andReturn().getResponse().getContentAsString();
 
-      DestinationResponse actualResponseBody = mapper.readValue(actualContent, DestinationResponse.class);
+      DestinationSummaryResponse actualResponseBody = mapper.readValue(actualContent, DestinationSummaryResponse.class);
 
       Assertions.assertThat(actualResponseBody).isNotNull();
       Assertions.assertThat(actualResponseBody.id()).isNotNull();
@@ -197,8 +197,8 @@ class DestinationControllerTest {
           .andExpect(status().isOk())
           .andReturn().getResponse().getContentAsString();
 
-      Page<DestinationResponse> actualResponseBody = mapper
-          .readValue(actualContent, new TypeReference<PageableResponse<DestinationResponse>>() {
+      Page<DestinationSummaryResponse> actualResponseBody = mapper
+          .readValue(actualContent, new TypeReference<PageableResponse<DestinationSummaryResponse>>() {
           });
 
       Assertions.assertThat(actualResponseBody).isNotNull().isNotEmpty().hasSize(1);
@@ -214,8 +214,8 @@ class DestinationControllerTest {
           .andExpect(status().isOk())
           .andReturn().getResponse().getContentAsString();
 
-      Page<DestinationResponse> actualResponseBody = mapper
-          .readValue(actualContent, new TypeReference<PageableResponse<DestinationResponse>>() {
+      Page<DestinationSummaryResponse> actualResponseBody = mapper
+          .readValue(actualContent, new TypeReference<PageableResponse<DestinationSummaryResponse>>() {
           });
 
       Assertions.assertThat(actualResponseBody).isNotNull().isNotEmpty().hasSize(1);
@@ -258,7 +258,7 @@ class DestinationControllerTest {
           .andExpect(status().isOk())
           .andReturn().getResponse().getContentAsString();
 
-      DestinationResponse actualResponseBody = mapper.readValue(actualContent, DestinationResponse.class);
+      DestinationSummaryResponse actualResponseBody = mapper.readValue(actualContent, DestinationSummaryResponse.class);
 
       Assertions.assertThat(actualResponseBody).isNotNull();
       Assertions.assertThat(actualResponseBody.id()).isNotNull().isEqualTo("abcdef1234567890abcdef12");

@@ -2,7 +2,8 @@ package br.com.emendes.jornadamilhasapi.mapper;
 
 import br.com.emendes.jornadamilhasapi.model.Destination;
 import br.com.emendes.jornadamilhasapi.service.dto.request.DestinationRequest;
-import br.com.emendes.jornadamilhasapi.service.dto.response.DestinationResponse;
+import br.com.emendes.jornadamilhasapi.service.dto.response.DestinationDetailsResponse;
+import br.com.emendes.jornadamilhasapi.service.dto.response.DestinationSummaryResponse;
 
 /**
  * Interface component com as abstrações de mapeamento entre {@link Destination} e DTOs e vice-versa.
@@ -19,12 +20,20 @@ public interface DestinationMapper {
   Destination toDestination(DestinationRequest destinationRequest);
 
   /**
-   * Mapeia o document Destination para o DTO {@link DestinationResponse}.
+   * Mapeia o document Destination para o DTO {@link DestinationSummaryResponse}.
    *
    * @param destination que será mapeado para DestinationResponse.
-   * @return {@link DestinationResponse} contedo informações sobre Destination.
+   * @return {@link DestinationSummaryResponse} contedo informações sobre Destination.
    */
-  DestinationResponse toDestinationResponse(Destination destination);
+  DestinationSummaryResponse toDestinationSummaryResponse(Destination destination);
+
+  /**
+   * Mapeia o document Destination para o DTO {@link DestinationDetailsResponse}.
+   *
+   * @param destination que será mapeado para DestinationDetailsResponse.
+   * @return {@link DestinationDetailsResponse} contedo informações sobre Destination.
+   */
+  DestinationDetailsResponse toDestinationDetailsResponse(Destination destination);
 
   /**
    * Mescla as informações dentro de destination com as informações contidas em destinationRequest.
