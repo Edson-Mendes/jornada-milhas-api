@@ -27,4 +27,11 @@ public interface ImageMapper {
    */
   URI toURI(Image image);
 
+  /**
+   * Mescla MultipartFile com um document Image.
+   *
+   * @param image            document que receberá a nova imagem.
+   * @param destinationImage novo arquivo de imagem.
+   */
+  void merge(Image image, MultipartFile destinationImage);
 }

@@ -28,6 +28,14 @@ public interface ImageService {
   Resource findById(String imageId);
 
   /**
+   * Atualiza imagem por id.
+   *
+   * @param imageId identificador da imagem a ser atualizada.
+   * @param image   arquivo contendo a nova imagem.
+   */
+  void update(String imageId, MultipartFile image);
+
+  /**
    * Deleta imagem por id.
    *
    * @param imageId identificador da imagem.

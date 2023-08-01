@@ -53,9 +53,17 @@ public interface DestinationService {
    *
    * @param destinationId      identificador do Destino a ser atualizado.
    * @param destinationRequest contendo as novas informações do Destino.
-   * @param destinationImage   arquivo contendo a nova  imagem do Destino.
    */
   void update(String destinationId, DestinationRequest destinationRequest);
+
+  /**
+   * Atualiza imagem do destino.
+   *
+   * @param destinationId identificador do destino.
+   * @param imageId       identificador da imagem.
+   * @param image         novo arquivo de imagem.
+   */
+  void updateImage(String destinationId, String imageId, MultipartFile image);
 
   /**
    * Deleta um destination por id.

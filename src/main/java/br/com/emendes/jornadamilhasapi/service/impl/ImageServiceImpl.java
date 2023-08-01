@@ -41,20 +41,39 @@ public class ImageServiceImpl implements ImageService {
   public Resource findById(String imageId) {
     log.info("attempt to fetch image with id: {}", imageId);
 
-    Image image = imageRepository.findById(imageId)
-        .orElseThrow(() -> {
-          log.info("image not found for id: {}", imageId);
-          return new ResourceNotFoundException("Image not found");
-        });
+    Image image = findImageById(imageId);
 
     log.info("image with id: {} found successful", imageId);
     return new ByteArrayResource(image.getContent().getData());
   }
 
   @Override
+  public void update(String imageId, MultipartFile file) {
+    Image image = findImageById(imageId);
+
+    imageMapper.merge(image, file);
+    imageRepository.save(image);
+  }
+
+  @Override
   public void delete(String imageId) {
     log.info("attempt to delete image with id: {}", imageId);
     imageRepository.deleteById(imageId);
+  }
+
+  /**
+   * Busca imagem por id.
+   *
+   * @param imageId identificador da imagem.
+   * @return {@code Image}
+   * @throws ResourceNotFoundException caso a imagem não seja encontrada.
+   */
+  private Image findImageById(String imageId) {
+    return imageRepository.findById(imageId)
+        .orElseThrow(() -> {
+          log.info("image not found for id: {}", imageId);
+          return new ResourceNotFoundException("Image not found");
+        });
   }
 
 }

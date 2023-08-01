@@ -93,6 +93,22 @@ public class DestinationController {
   }
 
   /**
+   * Método responsável por PATCH /api/destinations/{destinationId}/images/{imagesId}.
+   *
+   * @param destinationId identificador do Destino.
+   * @param imageId       identificador da imagem.
+   * @param image         nova imagem do destino.
+   */
+  @PatchMapping("/{destinationId}/images/{imageId}")
+  public ResponseEntity<Void> updateImage(
+      @PathVariable(name = "destinationId") @IdValidation String destinationId,
+      @PathVariable(name = "imageId") @IdValidation String imageId,
+      @RequestParam(value = "destination_image") @ImageValidation MultipartFile image) {
+    destinationService.updateImage(destinationId, imageId, image);
+    return ResponseEntity.noContent().build();
+  }
+
+  /**
    * Método responsável por DELETE /api/destinations/{id}
    *
    * @param destinationId identificador do Destination a ser deletado.

@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,6 +37,7 @@ public class Destination {
    *
    * @return identificador da imagem o qual images está associado.
    */
+  @Deprecated
   public String retrieveImageId() {
     if (images == null || images.isEmpty()) {
       throw new RuntimeException("has no images");
@@ -43,6 +45,20 @@ public class Destination {
     String[] paths = images.get(0).getPath().split("/");
 
     return paths[paths.length - 1];
+  }
+
+  /**
+   * Recupera os ids das imagens das URIs.
+   *
+   * @return lista de identificadores das imagensdo destino.
+   */
+  public List<String> retrieveImagesId() {
+    if (images == null || images.isEmpty()) return new ArrayList<>();
+
+    return images.stream().map(uri -> {
+      String[] split = uri.getPath().split("/");
+      return split[split.length - 1];
+    }).toList();
   }
 
 }

@@ -22,22 +22,37 @@ public class ImageMapperImpl implements ImageMapper {
   public Image toImage(MultipartFile destinationImage) {
     Assert.notNull(destinationImage, "DestinationImage must not be null");
 
-    try {
-      Binary content = new Binary(BsonBinarySubType.BINARY, destinationImage.getBytes());
+    Binary content = toBinary(destinationImage);
 
-      return Image.builder()
-          .type(destinationImage.getContentType())
-          .size(destinationImage.getSize())
-          .content(content)
-          .build();
-    } catch (IOException ioException) {
-      throw new FileAccessException("File access error");
-    }
+    return Image.builder()
+        .type(destinationImage.getContentType())
+        .size(destinationImage.getSize())
+        .content(content)
+        .build();
   }
 
   @Override
   public URI toURI(Image image) {
     return URI.create(String.format("http://localhost:8080/api/images/%s", image.getId()));
+  }
+
+  @Override
+  public void merge(Image image, MultipartFile destinationImage) {
+    Binary content = toBinary(destinationImage);
+
+    image.setContent(content);
+    image.setSize(destinationImage.getSize());
+  }
+
+  /**
+   * Converte MultipartFile para {@link Binary}.
+   */
+  private static Binary toBinary(MultipartFile destinationImage) {
+    try {
+      return new Binary(BsonBinarySubType.BINARY, destinationImage.getBytes());
+    } catch (IOException ioException) {
+      throw new FileAccessException("File access error");
+    }
   }
 
 }

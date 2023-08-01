@@ -104,6 +104,21 @@ public class DestinationServiceImpl implements DestinationService {
   }
 
   @Override
+  public void updateImage(String destinationId, String imageId, MultipartFile image) {
+    log.info("attempt to update image with id: {}", imageId);
+    Destination destination = findDestinationById(destinationId);
+
+    List<String> imageIdList = destination.retrieveImagesId();
+
+    if (!imageIdList.contains(imageId)) {
+      throw new ResourceNotFoundException("Image not found");
+    }
+
+    imageService.update(imageId, image);
+    log.info("image with id: {} updated successful", imageId);
+  }
+
+  @Override
   public void delete(String destinationId) {
     log.info("attempt to delete destination with id: {}", destinationId);
 
