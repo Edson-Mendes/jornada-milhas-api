@@ -10,8 +10,9 @@
 REST API de uma plataforma de turismo, onde pode-se pesquisar e visualizar destinos,
 preço médio de viagens, depoimentos de outros viajantes e muito mais.
 
-O projeto está em sua primeira semana de desenvolvimento, em que devemos implementar um CRUD do recurso Depoimento,
-configurar CORS, e criar testes automatizados que testem o status code das requisições desenvolvidas até agora.
+O projeto está em sua segunda semana de desenvolvimento, em que devemos implementar um CRUD do recurso Destino, 
+um endpoint para buscar destinos por nome, e criar testes automatizados que testem o status code das 
+requisições desenvolvidas até agora.
 
 Projeto proposto pela Alura no Challenge Backend 7ª Edição.
 
@@ -47,6 +48,7 @@ Projeto proposto pela Alura no Challenge Backend 7ª Edição.
 - `Salvar`: Salvar um depoimento através de um **POST /api/statements** com as informações *username*, *text* e
   *urlImage*
   em um JSON no corpo da requisição. Segue abaixo um exemplo do corpo da requisição.
+
     ```json
     {
       "username" : "Lorem Ipsum",
@@ -58,6 +60,7 @@ Projeto proposto pela Alura no Challenge Backend 7ª Edição.
   Em caso de sucesso a resposta tem status 201 com um JSON no corpo da resposta contendo
   **id**, **username**, **text**, **urlImage** e **createdAt** do depoimento salvo. Segue abaixo um exemplo do corpo da
   resposta.
+
     ```json
     {
       "id" : "1234567890abcdef12345678",
@@ -68,13 +71,13 @@ Projeto proposto pela Alura no Challenge Backend 7ª Edição.
     }
     ```
 
-
 - `Busca paginada`: Busca paginada de depoimentos através de um **GET /api/statements**. O cliente decide qual página 
   e quantidade de dados deseja, assim como o modo de ordenação, basta adicionar os parâmetros na url da requisição, 
-  ex: **/api/statements?page=4&size=3&sort=createdAt,DESC**.<br><br>
+  ex: **/api/statements?page=4&size=3&sort=createdAt,DESC**.<br>
 
   Em caso de sucesso a resposta tem status 200 com um JSON no corpo da resposta contendo os depoimentos solicitados.
   Segue abaixo um exemplo do corpo da resposta.
+
     ```json
     {
       "content": [
@@ -128,12 +131,12 @@ Projeto proposto pela Alura no Challenge Backend 7ª Edição.
     }
     ```
 
-
 - `Busca por id`: Busca depoimento por ID através de um **GET /api/statements/{ID}**, onde *{ID}* é o identificador do
-  Depoimento.<br><br>
+  Depoimento.<br>
 
   Em caso de sucesso a resposta tem status 200 com um JSON no corpo da resposta contendo o depoimento solicitado.
   Segue abaixo um exemplo do corpo da resposta.
+
   ```json
   {
     "id" : "1234567890abcdef12345678",
@@ -147,6 +150,7 @@ Projeto proposto pela Alura no Challenge Backend 7ª Edição.
 - `Busca para home`: Busca os 3 depoimentos mais recentes através de um **GET /api/statements/home**.<br><br>
   Em caso de sucesso a resposta tem status 200 com um JSON no corpo da resposta contendo os 3 depoimentos mais recentes.
   Segue abaixo um exemplo do corpo da resposta.
+
   ```json
   [
      {
@@ -175,6 +179,7 @@ Projeto proposto pela Alura no Challenge Backend 7ª Edição.
 
 - `Atualizar`: Atualizar Depoimento através de um **PUT /api/statements/{ID}**, onde *ID* é o identificador do Statement,
   os novos dados do depoimento devem ser enviados no corpo da requisição. Segue abaixo um exemplo do corpo da requisição.
+
     ```json
     {
       "username" : "Lorem I. Dolor",
@@ -188,5 +193,159 @@ Projeto proposto pela Alura no Challenge Backend 7ª Edição.
 
 - `Deletar`: Deletar depoimento através de um **DELETE /api/statements/{ID}**, onde *{ID}* é o identificador do
   Depoimento.<br>
+
+  Em caso de sucesso a resposta tem status 204.
+
+### API de gerenciamento de Destinos (Destination)
+
+- `Salvar`: Salvar um destino através de um **POST /api/destinations** com o *header content-type* como *multipart/form-data* 
+  e o request body em duas partes, uma com nome **destination_info** com as informações *name*, e *price* em um JSON e a 
+  outra parte com nome **destination_image** com um arquivo de imagem **JPEG** ou **PNG**, 
+  segue abaixo um exemplo do corpo da requisição.
+
+    ```
+    POST /api/destinations HTTP/1.1
+    Content-Length: 428
+    Content-Type: multipart/form-data; boundary=--BOUNDARY
+  
+    --BOUNDARY
+    Content-Type: application/json
+    Content-Disposition: form-data; name="destination_info"
+    
+    {
+      "name": "Veneza - Itália",
+      "price": 550.00
+    }
+    
+    --BOUNDARY
+    Content-Type: image/png
+    Content-Disposition: form-data; name="destination_image"; filename="veneza.png"
+    
+    (Content of your image file)
+    --BOUNDARY--
+    ```
+
+  Em caso de sucesso a resposta tem status 201 com um JSON no corpo da resposta contendo **id**, **name**, 
+  **price**, **urlImage** e **createdAt** do destino salvo. Segue abaixo um exemplo do corpo da resposta.
+
+    ```json
+    {
+      "id" : "1234567890abcdef12345678",
+      "name" : "Veneza - Itália",
+      "price" : 550.00,
+      "urlImage" : "https://xptoimages.com/1234567.jpg",
+      "createdAt": "2023-07-30T14:03:24"
+    }
+    ```
+
+- `Busca paginada`: Busca paginada de destinos através de um **GET /api/destinations**. O cliente decide qual página, 
+  quantidade de dados, e modo de ordenação, basta adicionar os parâmetros na url da requisição. Também pode-se buscar por 
+  nome do destino, também adicionando o parâmetro *name* com o nome do destino desejado na url da requisição.
+  ex: **/api/destinations?page=0&size=3&name=porto**.<br>
+
+  Em caso de sucesso a resposta tem status 200 com um JSON no corpo da resposta contendo os destinos encontrados.
+  Segue abaixo um exemplo do corpo da resposta.
+
+    ```json
+    {
+      "content": [
+        {
+          "id" : "1234567890abcdef1234567a",
+          "name" : "Porto Alegre - RS",
+          "price" : 650.00,
+          "urlImage" : "https://xptoimages.com/poa.jpg",
+          "createdAt": "2023-07-19T15:00:00"
+        },
+        {
+          "id" : "1234567890abcdef1234567b",
+          "name" : "Porto Velho - RO",
+          "price" : 775.00,
+          "urlImage" : "https://xptoimages.com/portovelho.jpg",
+          "createdAt": "2023-07-19T14:00:00"
+        },
+        {
+          "id" : "1234567890abcdef1234567c",
+          "name" : "Porto - Portugal",
+          "price" : 1500.00,
+          "urlImage" : "https://xptoimages.com/porto.png",
+          "createdAt": "2023-07-19T13:00:00"
+        }
+      ],
+      "pageable": {
+        "sort": {
+            "empty": true,
+            "sorted": false,
+            "unsorted": true
+        },
+        "offset": 0,
+        "pageNumber": 0,
+        "pageSize": 3,
+        "paged": true,
+        "unpaged": false
+      },
+      "totalPages": 3,
+      "totalElements": 8,
+      "last": false,
+      "size": 3,
+      "number": 0,
+      "sort": {
+        "empty": true,
+        "sorted": false,
+        "unsorted": true
+      },
+      "numberOfElements": 3,
+      "first": true,
+      "empty": false
+    }
+    ```
+ 
+- `Busca por id`: Busca destino por ID através de um **GET /api/destinations/{ID}**, onde *{ID}* é o identificador do
+  Destino.<br>
+
+  Em caso de sucesso a resposta tem status 200 com um JSON no corpo da resposta contendo o destino solicitado.
+  Segue abaixo um exemplo do corpo da resposta.
+
+  ```json
+  {
+    "id" : "1234567890abcdef12345678",
+    "name" : "Veneza - Itália",
+    "price" : 550.00,
+    "urlImage" : "https://xptoimages.com/1234567.jpg",
+    "createdAt": "2023-07-19T14:03:24"
+  }
+  ```
+
+- `Atualizar`: Atualizar Destino através de um **PUT /api/destinations/{ID}**, onde *ID* é o identificador do Destino,
+  os novos dados do destino devem ser enviados como **multipart/form-data** em duas partes, 
+  a primeira parte (obrigatório) com nome **destination_info** com as informações *name*, e *price* em um JSON e a
+  outra parte (opcional) com nome **destination_image** com um arquivo de imagem **JPEG** ou **PNG**. 
+  Segue abaixo um exemplo do corpo da requisição.
+
+    ```
+    PUT /api/destinations HTTP/1.1
+    Content-Length: 428
+    Content-Type: multipart/form-data; boundary=--BOUNDARY
+  
+    --BOUNDARY
+    Content-Type: application/json
+    Content-Disposition: form-data; name="destination_info"
+    
+    {
+      "name": "Veneza - ITA",
+      "price": 750.00
+    }
+    
+    --BOUNDARY
+    Content-Type: image/png
+    Content-Disposition: form-data; name="destination_image"; filename="veneza.png"
+    
+    (Content of your image file)
+    --BOUNDARY--
+    ```
+
+  Em caso de sucesso a resposta tem status 204.
+
+- `Deletar`: Deletar destino através de um **DELETE /api/destinations/{ID}**, onde *{ID}* é o identificador do
+  Destino.<br>
 
   Em caso de sucesso a resposta tem status 204.
