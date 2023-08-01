@@ -33,7 +33,7 @@ public class DestinationServiceImpl implements DestinationService {
   private final DestinationRepository destinationRepository;
 
   @Override
-  public DestinationSummaryResponse save(DestinationRequest destinationRequest, List<MultipartFile> destinationImages) {
+  public DestinationDetailsResponse save(DestinationRequest destinationRequest, List<MultipartFile> destinationImages) {
     log.info("attempt to save destination");
 
     Destination destination = destinationMapper.toDestination(destinationRequest);
@@ -49,7 +49,7 @@ public class DestinationServiceImpl implements DestinationService {
     destinationRepository.save(destination);
     log.info("Destination with id: {} saved successful", destination.getId());
 
-    return destinationMapper.toDestinationSummaryResponse(destination);
+    return destinationMapper.toDestinationDetailsResponse(destination);
   }
 
   @Override
@@ -87,22 +87,17 @@ public class DestinationServiceImpl implements DestinationService {
   }
 
   @Override
-  public void update(String destinationId, DestinationRequest destinationRequest, MultipartFile destinationImage) {
+  public void update(String destinationId, DestinationRequest destinationRequest) {
     log.info("attempt to update destination with id: {}", destinationId);
 
     Destination destination = findDestinationById(destinationId);
 
     destinationMapper.merge(destination, destinationRequest);
 
-//    if (destinationImage != null) {
-//      URI newImageURI = imageService.saveAll(destinationImage);
-//
-//      String imageId = destination.retrieveImageId();
-//      log.info("imageId: {}", imageId);
-//      imageService.delete(imageId);
-//
-//      destination.setUrlImage(newImageURI);
-//    }
+    if (destination.getDescription() == null) {
+      // TODO: Integrar com ChatGPT para ter uma descrição do lugar!
+      destination.setDescription("Lorem ipsum dolor sit amet");
+    }
 
     destinationRepository.save(destination);
     log.info("destination updated successful with id: {}", destinationId);

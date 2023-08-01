@@ -41,12 +41,12 @@ public class DestinationController {
    * @param image2             arquivo de imagem do destino.
    */
   @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-  public ResponseEntity<DestinationSummaryResponse> save(
+  public ResponseEntity<DestinationDetailsResponse> save(
       @RequestPart(name = "destination_info") @Valid DestinationRequest destinationRequest,
       @RequestPart(name = "destination_image1") @ImageValidation MultipartFile image1,
       @RequestPart(name = "destination_image2") @ImageValidation MultipartFile image2,
       UriComponentsBuilder uriBuilder) {
-    DestinationSummaryResponse destinationSummaryResponse = destinationService.save(destinationRequest, List.of(image1, image2));
+    DestinationDetailsResponse destinationSummaryResponse = destinationService.save(destinationRequest, List.of(image1, image2));
     URI uri = uriBuilder.path("/api/destinations/{id}").build(destinationSummaryResponse.id());
 
     return ResponseEntity.created(uri).body(destinationSummaryResponse);
@@ -83,14 +83,12 @@ public class DestinationController {
    *
    * @param destinationId      identificador do Destination a ser buscado.
    * @param destinationRequest que contém as novas informações do Destination.
-   * @param image              arquivo de imagem do destino.
    */
   @PutMapping("/{id}")
   public ResponseEntity<Void> update(
       @PathVariable(name = "id") @IdValidation String destinationId,
-      @RequestPart(name = "destination_info") @Valid DestinationRequest destinationRequest,
-      @RequestPart(name = "destination_image", required = false) @ImageValidation MultipartFile image) {
-    destinationService.update(destinationId, destinationRequest, image);
+      @RequestBody @Valid DestinationRequest destinationRequest) {
+    destinationService.update(destinationId, destinationRequest);
     return ResponseEntity.noContent().build();
   }
 

@@ -60,7 +60,7 @@ class DestinationControllerTest {
     @DisplayName("save must return status 201 and DestinationResponse when save successfully")
     void save_MustReturnStatus201AndDestinationResponse_WhenSaveSuccessfully() throws Exception {
       BDDMockito.when(destinationServiceMock.save(any(), any()))
-          .thenReturn(DestinationFaker.destinationResponse());
+          .thenReturn(DestinationFaker.destinationDetailsResponse());
 
       String destinationJson = """
           {
@@ -92,7 +92,7 @@ class DestinationControllerTest {
       Assertions.assertThat(actualResponseBody.id()).isNotNull();
       Assertions.assertThat(actualResponseBody.name()).isNotNull().isEqualTo("Veneza - Itália");
       Assertions.assertThat(actualResponseBody.price()).isNotNull().isEqualTo("500.00");
-      Assertions.assertThat(actualResponseBody.images())
+      Assertions.assertThat(actualResponseBody.image())
           .isNotNull().isEqualByComparingTo(URI.create("http://urlimage.com/api/images/aaaabbbbccccddddeeeeffff"));
       Assertions.assertThat(actualResponseBody.createdAt()).isNotNull();
     }
@@ -191,7 +191,7 @@ class DestinationControllerTest {
     @DisplayName("fetch must return status 200 and Page<DestinationResponse> when fetch successfully")
     void fetch_MustReturnStatus200AndPageDestinationResponse_WhenFetchSuccessfully() throws Exception {
       BDDMockito.when(destinationServiceMock.fetch(PAGEABLE_DEFAULT))
-          .thenReturn(new PageImpl<>(List.of(DestinationFaker.destinationResponse()), PAGEABLE_DEFAULT, 1));
+          .thenReturn(new PageImpl<>(List.of(DestinationFaker.destinationSummaryResponse()), PAGEABLE_DEFAULT, 1));
 
       String actualContent = mockMvc.perform(get(URL_TEMPLATE))
           .andExpect(status().isOk())
@@ -208,7 +208,7 @@ class DestinationControllerTest {
     @DisplayName("fetch must return status 200 and Page<DestinationResponse> when fetch by name successfully")
     void fetch_MustReturnStatus200AndPageDestinationResponse_WhenFetchByNameSuccessfully() throws Exception {
       BDDMockito.when(destinationServiceMock.findByName(PAGEABLE_DEFAULT, "Veneza"))
-          .thenReturn(new PageImpl<>(List.of(DestinationFaker.destinationResponse()), PAGEABLE_DEFAULT, 1));
+          .thenReturn(new PageImpl<>(List.of(DestinationFaker.destinationSummaryResponse()), PAGEABLE_DEFAULT, 1));
 
       String actualContent = mockMvc.perform(get(URL_TEMPLATE).param("name", "Veneza"))
           .andExpect(status().isOk())
@@ -251,7 +251,7 @@ class DestinationControllerTest {
     @DisplayName("findById must return status 200 and DestinationResponse when found successfully")
     void findById_MustReturnStatus200AndDestinationResponse_WhenFoundSuccessfully() throws Exception {
       BDDMockito.when(destinationServiceMock.findById(any()))
-          .thenReturn(DestinationFaker.destinationResponse());
+          .thenReturn(DestinationFaker.destinationDetailsResponse());
 
       String actualContent = mockMvc
           .perform(get(URL_TEMPLATE, "abcdef1234567890abcdef12").accept(MEDIA_TYPE_ACCEPT))
@@ -264,7 +264,7 @@ class DestinationControllerTest {
       Assertions.assertThat(actualResponseBody.id()).isNotNull().isEqualTo("abcdef1234567890abcdef12");
       Assertions.assertThat(actualResponseBody.name()).isNotNull().isEqualTo("Veneza - Itália");
       Assertions.assertThat(actualResponseBody.price()).isNotNull().isEqualTo("500.00");
-      Assertions.assertThat(actualResponseBody.images()).isNotNull();
+      Assertions.assertThat(actualResponseBody.image()).isNotNull();
       Assertions.assertThat(actualResponseBody.createdAt()).isNotNull();
     }
 
@@ -476,7 +476,7 @@ class DestinationControllerTest {
     @DisplayName("update must return status 404 and ProblemDetail when not find destination")
     void findById_MustReturnStatus404AndProblemDetail_WhenNotFindDestination() throws Exception {
       BDDMockito.willThrow(new ResourceNotFoundException("Destination not found"))
-          .given(destinationServiceMock).update(any(), any(), any());
+          .given(destinationServiceMock).update(any(), any());
 
       String destinationJson = """
           {

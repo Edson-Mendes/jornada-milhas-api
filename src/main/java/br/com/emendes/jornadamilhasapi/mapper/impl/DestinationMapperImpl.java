@@ -56,11 +56,12 @@ public class DestinationMapperImpl implements DestinationMapper {
 
   @Override
   public void merge(Destination destination, DestinationRequest destinationRequest) {
-    // TODO: deve ser atualizado!
     Assert.notNull(destination, "destination must not be null");
     Assert.notNull(destinationRequest, "destinationRequest must not be null");
 
     destination.setName(destinationRequest.name());
+    destination.setMeta(destinationRequest.meta());
+    destination.setDescription(destinationRequest.description());
     destination.setPrice(destinationRequest.price());
   }
 

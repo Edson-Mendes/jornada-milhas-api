@@ -21,7 +21,7 @@ public interface DestinationService {
    * @param destinationImages  Lista de files contendo imagens (jpg ou png) do destino.
    * @return {@link DestinationSummaryResponse} contendo informações do destino salvo.
    */
-  DestinationSummaryResponse save(DestinationRequest destinationRequest, List<MultipartFile> destinationImages);
+  DestinationDetailsResponse save(DestinationRequest destinationRequest, List<MultipartFile> destinationImages);
 
   /**
    * Busca páginada de Destinos..
@@ -55,7 +55,7 @@ public interface DestinationService {
    * @param destinationRequest contendo as novas informações do Destino.
    * @param destinationImage   arquivo contendo a nova  imagem do Destino.
    */
-  void update(String destinationId, DestinationRequest destinationRequest, MultipartFile destinationImage);
+  void update(String destinationId, DestinationRequest destinationRequest);
 
   /**
    * Deleta um destination por id.
