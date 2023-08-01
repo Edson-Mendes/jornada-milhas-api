@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 /**
  * Interface service com as abstrações para manipulação do recurso Destination.
  */
@@ -15,10 +17,10 @@ public interface DestinationService {
    * Salva um destino no sistema.
    *
    * @param destinationRequest DTO contendo as informações do destino a ser salvo.
-   * @param destinationImage   file contendo uma imagem (jpg ou png) do destino.
+   * @param destinationImages  Lista de files contendo imagens (jpg ou png) do destino.
    * @return {@link DestinationResponse} contendo informações do destino salvo.
    */
-  DestinationResponse save(DestinationRequest destinationRequest, MultipartFile destinationImage);
+  DestinationResponse save(DestinationRequest destinationRequest, List<MultipartFile> destinationImages);
 
   /**
    * Busca páginada de Destinos..

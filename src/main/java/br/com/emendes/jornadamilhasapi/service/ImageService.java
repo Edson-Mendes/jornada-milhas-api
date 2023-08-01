@@ -4,6 +4,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
+import java.util.List;
 
 /**
  * Interface service com as abstrações para manipulação do recurso Image.
@@ -13,10 +14,10 @@ public interface ImageService {
   /**
    * Salva uma imagem no sistema.
    *
-   * @param destinationImage file contendo a imagem a ser salva.
-   * @return url usada para recuperar a imagem salva.
+   * @param images List de files contendo a imagens a serem salvas.
+   * @return {@code List<URI>} urls das imagens salvas.
    */
-  URI save(MultipartFile destinationImage);
+  List<URI> saveAll(List<MultipartFile> images);
 
   /**
    * Busca imagem por id.

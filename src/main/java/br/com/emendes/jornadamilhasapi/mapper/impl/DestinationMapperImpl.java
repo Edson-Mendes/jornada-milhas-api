@@ -19,6 +19,8 @@ public class DestinationMapperImpl implements DestinationMapper {
 
     return Destination.builder()
         .name(destinationRequest.name())
+        .meta(destinationRequest.meta())
+        .description(destinationRequest.description())
         .price(destinationRequest.price())
         .build();
   }
@@ -31,13 +33,16 @@ public class DestinationMapperImpl implements DestinationMapper {
         .id(destination.getId())
         .name(destination.getName())
         .price(destination.getPrice())
-        .urlImage(destination.getUrlImage())
+        .meta(destination.getMeta())
+        .description(destination.getDescription())
+        .images(destination.getImages())
         .createdAt(destination.getCreatedAt())
         .build();
   }
 
   @Override
   public void merge(Destination destination, DestinationRequest destinationRequest) {
+    // TODO: deve ser atualizado!
     Assert.notNull(destination, "destination must not be null");
     Assert.notNull(destinationRequest, "destinationRequest must not be null");
 

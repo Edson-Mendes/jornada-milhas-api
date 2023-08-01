@@ -16,8 +16,8 @@ public record StatementRequest(
     @NotBlank(message = "text must not be blank")
     @Size(min = 2, max = 255, message = "text must contain between {min} and {max} characters long")
     String text,
-    @NotBlank(message = "urlImage must not be blank")
-    @URL(message = "urlImage must be a well formed URL")
+    @NotBlank(message = "images must not be blank")
+    @URL(message = "images must be a well formed URL")
     String urlImage
 ) {
 }

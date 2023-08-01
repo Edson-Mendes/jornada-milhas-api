@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
+import java.util.List;
 
 /**
  * Implementação de {@link ImageService}.
@@ -25,20 +26,15 @@ public class ImageServiceImpl implements ImageService {
   private final ImageMapper imageMapper;
   private final ImageRepository imageRepository;
 
-  /**
-   * Tamanho máximo da imagem, em bytes.
-   */
-  private static final long FILE_SIZE = 10_485_760L;
-
   @Override
-  public URI save(MultipartFile destinationImage) {
-    log.info("attempt to save image");
+  public List<URI> saveAll(List<MultipartFile> files) {
+    log.info("attempt to save images");
 
-    Image image = imageMapper.toImage(destinationImage);
-    imageRepository.save(image);
+    List<Image> images = files.stream().map(imageMapper::toImage).toList();
+    imageRepository.saveAll(images);
 
-    log.info("image saved successful");
-    return imageMapper.toURI(image);
+    log.info("images saved successful");
+    return images.stream().map(imageMapper::toURI).toList();
   }
 
   @Override

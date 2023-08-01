@@ -15,9 +15,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 /**
  * Implementação de {@link DestinationService}.
@@ -32,13 +32,18 @@ public class DestinationServiceImpl implements DestinationService {
   private final DestinationRepository destinationRepository;
 
   @Override
-  public DestinationResponse save(DestinationRequest destinationRequest, MultipartFile destinationImage) {
+  public DestinationResponse save(DestinationRequest destinationRequest, List<MultipartFile> destinationImages) {
     log.info("attempt to save destination");
 
     Destination destination = destinationMapper.toDestination(destinationRequest);
 
-    destination.setUrlImage(imageService.save(destinationImage));
+    destination.setImages(imageService.saveAll(destinationImages));
     destination.setCreatedAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+
+    if (destination.getDescription() == null) {
+      // TODO: Integrar com ChatGPT para ter uma descrição do lugar!
+      destination.setDescription("Lorem ipsum dolor sit amet");
+    }
 
     destinationRepository.save(destination);
     log.info("Destination with id: {} saved successful", destination.getId());
@@ -88,15 +93,15 @@ public class DestinationServiceImpl implements DestinationService {
 
     destinationMapper.merge(destination, destinationRequest);
 
-    if (destinationImage != null) {
-      URI newImageURI = imageService.save(destinationImage);
-
-      String imageId = destination.retrieveImageId();
-      log.info("imageId: {}", imageId);
-      imageService.delete(imageId);
-
-      destination.setUrlImage(newImageURI);
-    }
+//    if (destinationImage != null) {
+//      URI newImageURI = imageService.saveAll(destinationImage);
+//
+//      String imageId = destination.retrieveImageId();
+//      log.info("imageId: {}", imageId);
+//      imageService.delete(imageId);
+//
+//      destination.setUrlImage(newImageURI);
+//    }
 
     destinationRepository.save(destination);
     log.info("destination updated successful with id: {}", destinationId);

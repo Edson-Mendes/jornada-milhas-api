@@ -92,7 +92,7 @@ class DestinationControllerTest {
       Assertions.assertThat(actualResponseBody.id()).isNotNull();
       Assertions.assertThat(actualResponseBody.name()).isNotNull().isEqualTo("Veneza - Itália");
       Assertions.assertThat(actualResponseBody.price()).isNotNull().isEqualTo("500.00");
-      Assertions.assertThat(actualResponseBody.urlImage())
+      Assertions.assertThat(actualResponseBody.images())
           .isNotNull().isEqualByComparingTo(URI.create("http://urlimage.com/api/images/aaaabbbbccccddddeeeeffff"));
       Assertions.assertThat(actualResponseBody.createdAt()).isNotNull();
     }
@@ -264,7 +264,7 @@ class DestinationControllerTest {
       Assertions.assertThat(actualResponseBody.id()).isNotNull().isEqualTo("abcdef1234567890abcdef12");
       Assertions.assertThat(actualResponseBody.name()).isNotNull().isEqualTo("Veneza - Itália");
       Assertions.assertThat(actualResponseBody.price()).isNotNull().isEqualTo("500.00");
-      Assertions.assertThat(actualResponseBody.urlImage()).isNotNull();
+      Assertions.assertThat(actualResponseBody.images()).isNotNull();
       Assertions.assertThat(actualResponseBody.createdAt()).isNotNull();
     }
 

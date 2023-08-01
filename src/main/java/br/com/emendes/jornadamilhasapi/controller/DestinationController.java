@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 /**
  * Controller responsável pelo endpoint /api/destinations
@@ -35,14 +36,16 @@ public class DestinationController {
    * Método responsável por POST /api/destinations.
    *
    * @param destinationRequest que contém as informações do Destination a ser salvo
-   * @param image              arquivo de imagem do destino.
+   * @param image1             arquivo de imagem do destino.
+   * @param image2             arquivo de imagem do destino.
    */
   @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
   public ResponseEntity<DestinationResponse> save(
       @RequestPart(name = "destination_info") @Valid DestinationRequest destinationRequest,
-      @RequestPart(name = "destination_image") @ImageValidation MultipartFile image,
+      @RequestPart(name = "destination_image1") @ImageValidation MultipartFile image1,
+      @RequestPart(name = "destination_image2") @ImageValidation MultipartFile image2,
       UriComponentsBuilder uriBuilder) {
-    DestinationResponse destinationResponse = destinationService.save(destinationRequest, image);
+    DestinationResponse destinationResponse = destinationService.save(destinationRequest, List.of(image1, image2));
     URI uri = uriBuilder.path("/api/destinations/{id}").build(destinationResponse.id());
 
     return ResponseEntity.created(uri).body(destinationResponse);
