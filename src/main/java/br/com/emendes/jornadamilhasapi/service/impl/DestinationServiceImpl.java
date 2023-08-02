@@ -4,6 +4,7 @@ import br.com.emendes.jornadamilhasapi.exception.ResourceNotFoundException;
 import br.com.emendes.jornadamilhasapi.mapper.DestinationMapper;
 import br.com.emendes.jornadamilhasapi.model.Destination;
 import br.com.emendes.jornadamilhasapi.repository.DestinationRepository;
+import br.com.emendes.jornadamilhasapi.service.ChatGPTService;
 import br.com.emendes.jornadamilhasapi.service.DestinationService;
 import br.com.emendes.jornadamilhasapi.service.ImageService;
 import br.com.emendes.jornadamilhasapi.service.dto.request.DestinationRequest;
@@ -31,6 +32,7 @@ public class DestinationServiceImpl implements DestinationService {
   private final DestinationMapper destinationMapper;
   private final ImageService imageService;
   private final DestinationRepository destinationRepository;
+  private final ChatGPTService chatGPTService;
 
   @Override
   public DestinationDetailsResponse save(DestinationRequest destinationRequest, List<MultipartFile> destinationImages) {
@@ -42,8 +44,7 @@ public class DestinationServiceImpl implements DestinationService {
     destination.setCreatedAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
 
     if (destination.getDescription() == null) {
-      // TODO: Integrar com ChatGPT para ter uma descrição do lugar!
-      destination.setDescription("Lorem ipsum dolor sit amet");
+      destination.setDescription(chatGPTService.fetchDestinationDescription(destinationRequest.name()));
     }
 
     destinationRepository.save(destination);
@@ -95,8 +96,7 @@ public class DestinationServiceImpl implements DestinationService {
     destinationMapper.merge(destination, destinationRequest);
 
     if (destination.getDescription() == null) {
-      // TODO: Integrar com ChatGPT para ter uma descrição do lugar!
-      destination.setDescription("Lorem ipsum dolor sit amet");
+      destination.setDescription(chatGPTService.fetchDestinationDescription(destinationRequest.name()));
     }
 
     destinationRepository.save(destination);
