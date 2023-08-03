@@ -58,8 +58,8 @@ class DestinationControllerTest {
     private final String URL_TEMPLATE = "/api/destinations";
 
     @Test
-    @DisplayName("save must return status 201 and DestinationResponse when save successfully")
-    void save_MustReturnStatus201AndDestinationResponse_WhenSaveSuccessfully() throws Exception {
+    @DisplayName("save must return status 201 and DestinationDetailsResponse when save successfully")
+    void save_MustReturnStatus201AndDestinationDetailsResponse_WhenSaveSuccessfully() throws Exception {
       BDDMockito.when(destinationServiceMock.save(any(), any()))
           .thenReturn(DestinationFaker.destinationDetailsResponse());
 
@@ -318,8 +318,8 @@ class DestinationControllerTest {
     private final Pageable PAGEABLE_DEFAULT = PageRequest.of(0, 10);
 
     @Test
-    @DisplayName("fetch must return status 200 and Page<DestinationResponse> when fetch successfully")
-    void fetch_MustReturnStatus200AndPageDestinationResponse_WhenFetchSuccessfully() throws Exception {
+    @DisplayName("fetch must return status 200 and Page<DestinationSummaryResponse> when fetch successfully")
+    void fetch_MustReturnStatus200AndPageDestinationSummaryResponse_WhenFetchSuccessfully() throws Exception {
       BDDMockito.when(destinationServiceMock.fetch(PAGEABLE_DEFAULT))
           .thenReturn(new PageImpl<>(List.of(DestinationFaker.destinationSummaryResponse()), PAGEABLE_DEFAULT, 1));
 
@@ -335,8 +335,8 @@ class DestinationControllerTest {
     }
 
     @Test
-    @DisplayName("fetch must return status 200 and Page<DestinationResponse> when fetch by name successfully")
-    void fetch_MustReturnStatus200AndPageDestinationResponse_WhenFetchByNameSuccessfully() throws Exception {
+    @DisplayName("fetch must return status 200 and Page<DestinationSummaryResponse> when fetch by name successfully")
+    void fetch_MustReturnStatus200AndPageDestinationSummaryResponse_WhenFetchByNameSuccessfully() throws Exception {
       BDDMockito.when(destinationServiceMock.findByName(PAGEABLE_DEFAULT, "Veneza"))
           .thenReturn(new PageImpl<>(List.of(DestinationFaker.destinationSummaryResponse()), PAGEABLE_DEFAULT, 1));
 
@@ -378,8 +378,8 @@ class DestinationControllerTest {
     private final String URL_TEMPLATE = "/api/destinations/{id}";
 
     @Test
-    @DisplayName("findById must return status 200 and DestinationResponse when found successfully")
-    void findById_MustReturnStatus200AndDestinationResponse_WhenFoundSuccessfully() throws Exception {
+    @DisplayName("findById must return status 200 and DestinationDetailsResponse when found successfully")
+    void findById_MustReturnStatus200AndDestinationDetailsResponse_WhenFoundSuccessfully() throws Exception {
       BDDMockito.when(destinationServiceMock.findById(any()))
           .thenReturn(DestinationFaker.destinationDetailsResponse());
 
@@ -388,13 +388,15 @@ class DestinationControllerTest {
           .andExpect(status().isOk())
           .andReturn().getResponse().getContentAsString();
 
-      DestinationSummaryResponse actualResponseBody = mapper.readValue(actualContent, DestinationSummaryResponse.class);
+      DestinationDetailsResponse actualResponseBody = mapper.readValue(actualContent, DestinationDetailsResponse.class);
 
       Assertions.assertThat(actualResponseBody).isNotNull();
       Assertions.assertThat(actualResponseBody.id()).isNotNull().isEqualTo("abcdef1234567890abcdef12");
       Assertions.assertThat(actualResponseBody.name()).isNotNull().isEqualTo("Veneza - Itália");
       Assertions.assertThat(actualResponseBody.price()).isNotNull().isEqualTo("500.00");
-      Assertions.assertThat(actualResponseBody.image()).isNotNull();
+      Assertions.assertThat(actualResponseBody.meta()).isNotNull().isEqualTo("Uma bela cidade da Itália.");
+      Assertions.assertThat(actualResponseBody.description()).isNotNull().isEqualTo("Lorem ipsum dolor sit amet");
+      Assertions.assertThat(actualResponseBody.images()).isNotNull().hasSize(2);
       Assertions.assertThat(actualResponseBody.createdAt()).isNotNull();
     }
 
@@ -444,76 +446,38 @@ class DestinationControllerTest {
     private final String URL_TEMPLATE = "/api/destinations/{id}";
 
     @Test
-    @DisplayName("update must return status 204 when update destination info successfully")
-    void update_MustReturnStatus204_WhenUpdateDestinationInfoSuccessfully() throws Exception {
-      String destinationJson = """
+    @DisplayName("update must return status 204 when update destination successfully")
+    void update_MustReturnStatus204_WhenUpdateDestinationSuccessfully() throws Exception {
+      String requestBody = """
           {
             "name": "Veneza - ITA",
-            "price": 550.00
+            "price": 550.00,
+            "meta": "Uma bela cidade da Itália."
           }
           """;
 
-      MockMultipartFile destinationInfo = new MockMultipartFile(
-          "destination_info", null, MediaType.APPLICATION_JSON_VALUE, destinationJson.getBytes());
 
-
-      mockMvc.perform(multipart(HttpMethod.PUT, URL_TEMPLATE, "abcdef1234567890abcdef12")
-              .file(destinationInfo)
-              .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+      mockMvc.perform(put( URL_TEMPLATE, "abcdef1234567890abcdef12")
+              .content(requestBody)
+              .contentType(MediaType.APPLICATION_JSON)
               .accept(MEDIA_TYPE_ACCEPT))
           .andExpect(status().isNoContent());
     }
 
     @Test
-    @DisplayName("update must return status 204 when update destination info and image successfully")
-    void update_MustReturnStatus204_WhenUpdateDestinationInfoAndImageSuccessfully() throws Exception {
-      String destinationJson = """
-          {
-            "name": "Veneza - ITA",
-            "price": 550.00
-          }
-          """;
-
-      MockMultipartFile destinationInfo = new MockMultipartFile(
-          "destination_info", null, MediaType.APPLICATION_JSON_VALUE, destinationJson.getBytes());
-
-      InputStream image = new FileInputStream("src/test/resources/image/veneza01.jpg");
-
-      MockMultipartFile destinationImage = new MockMultipartFile(
-          "destination_image", "veneza01.jpg", MediaType.IMAGE_JPEG_VALUE, image);
-      image.close();
-
-      mockMvc.perform(multipart(HttpMethod.PUT, URL_TEMPLATE, "abcdef1234567890abcdef12")
-              .file(destinationInfo)
-              .file(destinationImage)
-              .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
-              .accept(MEDIA_TYPE_ACCEPT))
-          .andExpect(status().isNoContent());
-    }
-
-    @Test
-    @DisplayName("update must return status 400 and ProblemDetail when destination_info has invalid fields")
-    void update_MustReturnStatus400AndProblemDetail_WhenDestinationInfoHasInvalidFields() throws Exception {
-      String destinationJson = """
+    @DisplayName("update must return status 400 and ProblemDetail when request body has invalid fields")
+    void update_MustReturnStatus400AndProblemDetail_WhenRequestBodyHasInvalidFields() throws Exception {
+      String requestBody = """
           {
             "name": "",
-            "price": 550.00
+            "price": 550.00,
+            "meta": "Uma bela cidade da Itália."
           }
           """;
 
-      MockMultipartFile destinationInfo = new MockMultipartFile(
-          "destination_info", null, MediaType.APPLICATION_JSON_VALUE, destinationJson.getBytes());
-
-      InputStream image = new FileInputStream("src/test/resources/image/veneza01.jpg");
-
-      MockMultipartFile destinationImage = new MockMultipartFile(
-          "destination_image", "veneza01.jpg", MediaType.IMAGE_JPEG_VALUE, image);
-      image.close();
-
-      String actualContent = mockMvc.perform(multipart(HttpMethod.PUT, URL_TEMPLATE, "abcdef1234567890abcdef12")
-              .file(destinationImage)
-              .file(destinationInfo)
-              .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+      String actualContent = mockMvc.perform(put(URL_TEMPLATE, "abcdef1234567890abcdef12")
+              .content(requestBody)
+              .contentType(MediaType.APPLICATION_JSON)
               .accept(MEDIA_TYPE_ACCEPT))
           .andExpect(status().isBadRequest())
           .andReturn().getResponse().getContentAsString();
@@ -537,58 +501,19 @@ class DestinationControllerTest {
     }
 
     @Test
-    @DisplayName("update must return status 400 and ProblemDetail when destination_image is invalid format")
-    void update_MustReturnStatus400AndProblemDetail_WhenDestinationImageIsInvalidFormat() throws Exception {
-      String destinationJson = """
-          {
-            "name": "Veneza - ITA",
-            "price": 550.00
-          }
-          """;
-
-      MockMultipartFile destinationInfo = new MockMultipartFile(
-          "destination_info", null, MediaType.APPLICATION_JSON_VALUE, destinationJson.getBytes());
-
-      InputStream image = new FileInputStream("src/test/resources/image/venezagif.gif");
-
-      MockMultipartFile destinationImage = new MockMultipartFile(
-          "destination_image", "venezagif.gif", MediaType.IMAGE_GIF_VALUE, image);
-      image.close();
-
-      String actualContent = mockMvc.perform(multipart(HttpMethod.PUT, URL_TEMPLATE, "abcdef1234567890abcdef12")
-              .file(destinationImage)
-              .file(destinationInfo)
-              .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
-              .accept(MEDIA_TYPE_ACCEPT))
-          .andExpect(status().isBadRequest())
-          .andReturn().getResponse().getContentAsString();
-
-      ProblemDetail actualResponseBody = mapper.readValue(actualContent, ProblemDetail.class);
-
-      Assertions.assertThat(actualResponseBody).isNotNull();
-      Assertions.assertThat(actualResponseBody.getTitle()).isNotNull().isEqualTo("Bad Request");
-      Assertions.assertThat(actualResponseBody.getDetail()).isNotNull()
-          .isEqualTo("file format must be [jpeg, png]");
-      Assertions.assertThat(actualResponseBody.getStatus()).isEqualTo(400);
-    }
-
-    @Test
     @DisplayName("update must return status 400 and ProblemDetail when id is invalid")
     void update_MustReturnStatus400AndProblemDetail_WhenIdIsInvalid() throws Exception {
-      String destinationJson = """
+      String requestBody = """
           {
             "name": "Veneza - ITA",
-            "price": 550.00
+            "price": 550.00,
+            "meta": "Uma bela cidade da Itália."
           }
           """;
 
-      MockMultipartFile destinationInfo = new MockMultipartFile(
-          "destination_info", null, MediaType.APPLICATION_JSON_VALUE, destinationJson.getBytes());
-
-
-      String actualContent = mockMvc.perform(multipart(HttpMethod.PUT, URL_TEMPLATE, "abcdef1234567890ZXS")
-              .file(destinationInfo)
-              .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+      String actualContent = mockMvc.perform(put( URL_TEMPLATE, "abcdef1234567890ZXS")
+              .content(requestBody)
+              .contentType(MediaType.APPLICATION_JSON)
               .accept(MEDIA_TYPE_ACCEPT))
           .andExpect(status().isBadRequest())
           .andReturn().getResponse().getContentAsString();
@@ -608,19 +533,19 @@ class DestinationControllerTest {
       BDDMockito.willThrow(new ResourceNotFoundException("Destination not found"))
           .given(destinationServiceMock).update(any(), any());
 
-      String destinationJson = """
+      String requestBody = """
           {
             "name": "Veneza - ITA",
-            "price": 550.00
+            "price": 550.00,
+            "meta": "Uma bela cidade da Itália."
           }
           """;
 
-      MockMultipartFile destinationInfo = new MockMultipartFile(
-          "destination_info", null, MediaType.APPLICATION_JSON_VALUE, destinationJson.getBytes());
-
       String actualContent = mockMvc
-          .perform(multipart(HttpMethod.PUT, URL_TEMPLATE, "abcdef1234567890abcdef12")
-              .file(destinationInfo))
+          .perform(put(URL_TEMPLATE, "abcdef1234567890abcdef12")
+              .content(requestBody)
+              .contentType(MediaType.APPLICATION_JSON)
+              .accept(MEDIA_TYPE_ACCEPT))
           .andExpect(status().isNotFound())
           .andReturn().getResponse().getContentAsString();
 
