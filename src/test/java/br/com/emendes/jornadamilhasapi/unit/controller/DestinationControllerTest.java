@@ -3,6 +3,7 @@ package br.com.emendes.jornadamilhasapi.unit.controller;
 import br.com.emendes.jornadamilhasapi.controller.DestinationController;
 import br.com.emendes.jornadamilhasapi.exception.ResourceNotFoundException;
 import br.com.emendes.jornadamilhasapi.service.DestinationService;
+import br.com.emendes.jornadamilhasapi.service.dto.response.DestinationDetailsResponse;
 import br.com.emendes.jornadamilhasapi.service.dto.response.DestinationSummaryResponse;
 import br.com.emendes.jornadamilhasapi.util.PageableResponse;
 import br.com.emendes.jornadamilhasapi.util.faker.DestinationFaker;
@@ -65,35 +66,44 @@ class DestinationControllerTest {
       String destinationJson = """
           {
             "name": "Veneza - Itália",
-            "price": 500.00
+            "price": 500.00,
+            "meta": "Uma bela cidade da Itália."
           }
           """;
 
       MockMultipartFile destinationInfo = new MockMultipartFile(
           "destination_info", null, MediaType.APPLICATION_JSON_VALUE, destinationJson.getBytes());
 
-      InputStream image = new FileInputStream("src/test/resources/image/veneza01.jpg");
+      InputStream image1 = new FileInputStream("src/test/resources/image/veneza01.jpg");
+      InputStream image2 = new FileInputStream("src/test/resources/image/veneza02.jpg");
 
-      MockMultipartFile destinationImage = new MockMultipartFile(
-          "destination_image", "veneza01.jpg", MediaType.IMAGE_JPEG_VALUE, image);
-      image.close();
+      MockMultipartFile destinationImage1 = new MockMultipartFile(
+          "destination_image1", "veneza01.jpg", MediaType.IMAGE_JPEG_VALUE, image1);
+      MockMultipartFile destinationImage2 = new MockMultipartFile(
+          "destination_image2", "veneza02.jpg", MediaType.IMAGE_JPEG_VALUE, image2);
+
+      image1.close();
+      image2.close();
 
       String actualContent = mockMvc.perform(multipart(URL_TEMPLATE)
-              .file(destinationImage)
               .file(destinationInfo)
+              .file(destinationImage1)
+              .file(destinationImage2)
               .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
               .accept(MEDIA_TYPE_ACCEPT))
           .andExpect(status().isCreated())
           .andReturn().getResponse().getContentAsString();
 
-      DestinationSummaryResponse actualResponseBody = mapper.readValue(actualContent, DestinationSummaryResponse.class);
+      DestinationDetailsResponse actualResponseBody = mapper.readValue(actualContent, DestinationDetailsResponse.class);
 
       Assertions.assertThat(actualResponseBody).isNotNull();
       Assertions.assertThat(actualResponseBody.id()).isNotNull();
       Assertions.assertThat(actualResponseBody.name()).isNotNull().isEqualTo("Veneza - Itália");
       Assertions.assertThat(actualResponseBody.price()).isNotNull().isEqualTo("500.00");
-      Assertions.assertThat(actualResponseBody.image())
-          .isNotNull().isEqualByComparingTo(URI.create("http://urlimage.com/api/images/aaaabbbbccccddddeeeeffff"));
+      Assertions.assertThat(actualResponseBody.meta()).isNotNull().isEqualTo("Uma bela cidade da Itália.");
+      Assertions.assertThat(actualResponseBody.description()).isNotNull().isEqualTo("Lorem ipsum dolor sit amet");
+      Assertions.assertThat(actualResponseBody.images())
+          .isNotNull().hasSize(2);
       Assertions.assertThat(actualResponseBody.createdAt()).isNotNull();
     }
 
@@ -103,22 +113,29 @@ class DestinationControllerTest {
       String destinationJson = """
           {
             "name": "",
-            "price": 500.00
+            "price": 500.00,
+            "meta": "Uma bela cidade da Itália."
           }
           """;
 
       MockMultipartFile destinationInfo = new MockMultipartFile(
           "destination_info", null, MediaType.APPLICATION_JSON_VALUE, destinationJson.getBytes());
 
-      InputStream image = new FileInputStream("src/test/resources/image/veneza01.jpg");
+      InputStream image1 = new FileInputStream("src/test/resources/image/veneza01.jpg");
+      InputStream image2 = new FileInputStream("src/test/resources/image/veneza02.jpg");
 
-      MockMultipartFile destinationImage = new MockMultipartFile(
-          "destination_image", "veneza01.jpg", MediaType.IMAGE_JPEG_VALUE, image);
-      image.close();
+      MockMultipartFile destinationImage1 = new MockMultipartFile(
+          "destination_image1", "veneza01.jpg", MediaType.IMAGE_JPEG_VALUE, image1);
+      MockMultipartFile destinationImage2 = new MockMultipartFile(
+          "destination_image2", "veneza02.jpg", MediaType.IMAGE_JPEG_VALUE, image2);
+
+      image1.close();
+      image2.close();
 
       String actualContent = mockMvc.perform(multipart(URL_TEMPLATE)
-              .file(destinationImage)
               .file(destinationInfo)
+              .file(destinationImage1)
+              .file(destinationImage2)
               .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
               .accept(MEDIA_TYPE_ACCEPT))
           .andExpect(status().isBadRequest())
@@ -148,22 +165,28 @@ class DestinationControllerTest {
       String destinationJson = """
           {
             "name": "Veneza - Itália",
-            "price": 500.00
+            "price": 500.00,
+            "meta": "Uma bela cidade da Itália."
           }
           """;
 
       MockMultipartFile destinationInfo = new MockMultipartFile(
           "destination_info", null, MediaType.APPLICATION_JSON_VALUE, destinationJson.getBytes());
 
-      InputStream image = new FileInputStream("src/test/resources/image/veneza02.gif");
+      InputStream image1 = new FileInputStream("src/test/resources/image/veneza01.jpg");
+      InputStream image2 = new FileInputStream("src/test/resources/image/venezagif.gif");
 
-      MockMultipartFile destinationImage = new MockMultipartFile(
-          "destination_image", "veneza02.gif", MediaType.IMAGE_GIF_VALUE, image);
-      image.close();
+      MockMultipartFile destinationImage1 = new MockMultipartFile(
+          "destination_image1", "veneza01.jpg", MediaType.IMAGE_JPEG_VALUE, image1);
+      MockMultipartFile destinationImage2 = new MockMultipartFile(
+          "destination_image2", "venezagif.gif", MediaType.IMAGE_GIF_VALUE, image2);
+      image1.close();
+      image2.close();
 
       String actualContent = mockMvc.perform(multipart(URL_TEMPLATE)
-              .file(destinationImage)
               .file(destinationInfo)
+              .file(destinationImage1)
+              .file(destinationImage2)
               .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
               .accept(MEDIA_TYPE_ACCEPT))
           .andExpect(status().isBadRequest())
@@ -175,6 +198,113 @@ class DestinationControllerTest {
       Assertions.assertThat(actualResponseBody.getTitle()).isNotNull().isEqualTo("Bad Request");
       Assertions.assertThat(actualResponseBody.getDetail()).isNotNull()
           .isEqualTo("file format must be [jpeg, png]");
+      Assertions.assertThat(actualResponseBody.getStatus()).isEqualTo(400);
+    }
+
+    @Test
+    @DisplayName("save must return status 400 and ProblemDetail when part destination_info is not present")
+    void save_MustReturnStatus400AndProblemDetail_WhenPartDestinationInfoIsNotPresent() throws Exception {
+      InputStream image1 = new FileInputStream("src/test/resources/image/veneza01.jpg");
+      InputStream image2 = new FileInputStream("src/test/resources/image/veneza02.jpg");
+
+      MockMultipartFile destinationImage1 = new MockMultipartFile(
+          "destination_image1", "veneza01.jpg", MediaType.IMAGE_JPEG_VALUE, image1);
+      MockMultipartFile destinationImage2 = new MockMultipartFile(
+          "destination_image2", "veneza02.jpg", MediaType.IMAGE_JPEG_VALUE, image2);
+
+      image1.close();
+      image2.close();
+
+      String actualContent = mockMvc.perform(multipart(URL_TEMPLATE)
+              .file(destinationImage1)
+              .file(destinationImage2)
+              .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+              .accept(MEDIA_TYPE_ACCEPT))
+          .andExpect(status().isBadRequest())
+          .andReturn().getResponse().getContentAsString();
+
+      ProblemDetail actualResponseBody = mapper.readValue(actualContent, ProblemDetail.class);
+
+      Assertions.assertThat(actualResponseBody).isNotNull();
+      Assertions.assertThat(actualResponseBody.getTitle()).isNotNull().isEqualTo("Bad Request");
+      Assertions.assertThat(actualResponseBody.getDetail()).isNotNull()
+          .isEqualTo("Required part 'destination_info' is not present.");
+      Assertions.assertThat(actualResponseBody.getStatus()).isEqualTo(400);
+    }
+
+    @Test
+    @DisplayName("save must return status 400 and ProblemDetail when part destination_image1 is not present")
+    void save_MustReturnStatus400AndProblemDetail_WhenPartDestinationImage1IsNotPresent() throws Exception {
+      String destinationJson = """
+          {
+            "name": "Veneza - Itália",
+            "price": 500.00,
+            "meta": "Uma bela cidade da Itália."
+          }
+          """;
+
+      MockMultipartFile destinationInfo = new MockMultipartFile(
+          "destination_info", null, MediaType.APPLICATION_JSON_VALUE, destinationJson.getBytes());
+
+      InputStream image2 = new FileInputStream("src/test/resources/image/veneza02.jpg");
+
+      MockMultipartFile destinationImage2 = new MockMultipartFile(
+          "destination_image2", "veneza02.jpg", MediaType.IMAGE_JPEG_VALUE, image2);
+
+      image2.close();
+
+      String actualContent = mockMvc.perform(multipart(URL_TEMPLATE)
+              .file(destinationInfo)
+              .file(destinationImage2)
+              .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+              .accept(MEDIA_TYPE_ACCEPT))
+          .andExpect(status().isBadRequest())
+          .andReturn().getResponse().getContentAsString();
+
+      ProblemDetail actualResponseBody = mapper.readValue(actualContent, ProblemDetail.class);
+
+      Assertions.assertThat(actualResponseBody).isNotNull();
+      Assertions.assertThat(actualResponseBody.getTitle()).isNotNull().isEqualTo("Bad Request");
+      Assertions.assertThat(actualResponseBody.getDetail()).isNotNull()
+          .isEqualTo("Required part 'destination_image1' is not present.");
+      Assertions.assertThat(actualResponseBody.getStatus()).isEqualTo(400);
+    }
+
+    @Test
+    @DisplayName("save must return status 400 and ProblemDetail when part destination_image2 is not present")
+    void save_MustReturnStatus400AndProblemDetail_WhenPartDestinationImage2IsNotPresent() throws Exception {
+      String destinationJson = """
+          {
+            "name": "Veneza - Itália",
+            "price": 500.00,
+            "meta": "Uma bela cidade da Itália."
+          }
+          """;
+
+      MockMultipartFile destinationInfo = new MockMultipartFile(
+          "destination_info", null, MediaType.APPLICATION_JSON_VALUE, destinationJson.getBytes());
+
+      InputStream image1 = new FileInputStream("src/test/resources/image/veneza01.jpg");
+
+      MockMultipartFile destinationImage1 = new MockMultipartFile(
+          "destination_image1", "veneza01.jpg", MediaType.IMAGE_JPEG_VALUE, image1);
+
+      image1.close();
+
+      String actualContent = mockMvc.perform(multipart(URL_TEMPLATE)
+              .file(destinationInfo)
+              .file(destinationImage1)
+              .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+              .accept(MEDIA_TYPE_ACCEPT))
+          .andExpect(status().isBadRequest())
+          .andReturn().getResponse().getContentAsString();
+
+      ProblemDetail actualResponseBody = mapper.readValue(actualContent, ProblemDetail.class);
+
+      Assertions.assertThat(actualResponseBody).isNotNull();
+      Assertions.assertThat(actualResponseBody.getTitle()).isNotNull().isEqualTo("Bad Request");
+      Assertions.assertThat(actualResponseBody.getDetail()).isNotNull()
+          .isEqualTo("Required part 'destination_image2' is not present.");
       Assertions.assertThat(actualResponseBody.getStatus()).isEqualTo(400);
     }
 
@@ -419,10 +549,10 @@ class DestinationControllerTest {
       MockMultipartFile destinationInfo = new MockMultipartFile(
           "destination_info", null, MediaType.APPLICATION_JSON_VALUE, destinationJson.getBytes());
 
-      InputStream image = new FileInputStream("src/test/resources/image/veneza02.gif");
+      InputStream image = new FileInputStream("src/test/resources/image/venezagif.gif");
 
       MockMultipartFile destinationImage = new MockMultipartFile(
-          "destination_image", "veneza02.gif", MediaType.IMAGE_GIF_VALUE, image);
+          "destination_image", "venezagif.gif", MediaType.IMAGE_GIF_VALUE, image);
       image.close();
 
       String actualContent = mockMvc.perform(multipart(HttpMethod.PUT, URL_TEMPLATE, "abcdef1234567890abcdef12")

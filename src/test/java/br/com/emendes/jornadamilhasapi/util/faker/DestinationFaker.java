@@ -39,7 +39,7 @@ public class DestinationFaker {
     return DestinationDetailsResponse.builder()
         .id("abcdef1234567890abcdef12")
         .name("Veneza - Itália")
-        .meta("Bela cidade da Itália")
+        .meta("Uma bela cidade da Itália.")
         .description("Lorem ipsum dolor sit amet")
         .price(new BigDecimal("500.00"))
         .images(uriList)
