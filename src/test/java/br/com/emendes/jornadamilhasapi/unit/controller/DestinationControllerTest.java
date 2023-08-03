@@ -561,6 +561,171 @@ class DestinationControllerTest {
   }
 
   @Nested
+  @DisplayName("Tests for update Image endpoint")
+  class UpdateImageEndpoint {
+
+    private final String URL_TEMPLATE = "/api/destinations/{destinationId}/images/{imageId}";
+
+    @Test
+    @DisplayName("updateImage must return status 204 when update image successfully")
+    void updateImage_MustReturnStatus204_WhenUpdateImageSuccessfully() throws Exception {
+      InputStream image = new FileInputStream("src/test/resources/image/veneza01.jpg");
+      MockMultipartFile destinationImage = new MockMultipartFile(
+          "destination_image", "veneza01.jpg", MediaType.IMAGE_JPEG_VALUE, image);
+      image.close();
+
+      mockMvc.perform(multipart(HttpMethod.PATCH, URL_TEMPLATE, "abcdef1234567890abcdef12", "aaaabbbbccccddddeeeeffff")
+          .file(destinationImage)
+          .contentType(MediaType.MULTIPART_FORM_DATA))
+          .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("updateImage must return status 400 and ProblemDetail when destinationId is invalid")
+    void updateImage_MustReturnStatus400AndProblemDetail_WhenDestinationIdIsInvalid() throws Exception {
+      InputStream image = new FileInputStream("src/test/resources/image/veneza01.jpg");
+      MockMultipartFile destinationImage = new MockMultipartFile(
+          "destination_image", "veneza01.jpg", MediaType.IMAGE_JPEG_VALUE, image);
+      image.close();
+
+      String actualContent = mockMvc.perform(multipart(HttpMethod.PATCH, URL_TEMPLATE, "abcdef1234567890abcdeX", "aaaabbbbccccddddeeeeffff")
+              .file(destinationImage)
+              .contentType(MediaType.MULTIPART_FORM_DATA))
+          .andExpect(status().isBadRequest())
+          .andReturn().getResponse().getContentAsString();
+
+      ProblemDetail actualResponseBody = mapper.readValue(actualContent, ProblemDetail.class);
+
+      Assertions.assertThat(actualResponseBody).isNotNull();
+      Assertions.assertThat(actualResponseBody.getTitle()).isNotNull().isEqualTo("Bad Request");
+      Assertions.assertThat(actualResponseBody.getDetail()).isNotNull()
+          .contains("id must be hexadecimal value", "id must be 24 characters long");
+      Assertions.assertThat(actualResponseBody.getStatus()).isEqualTo(400);
+    }
+
+    @Test
+    @DisplayName("updateImage must return status 400 and ProblemDetail when imageId is invalid")
+    void updateImage_MustReturnStatus400AndProblemDetail_WhenImageIdIsInvalid() throws Exception {
+      InputStream image = new FileInputStream("src/test/resources/image/veneza01.jpg");
+      MockMultipartFile destinationImage = new MockMultipartFile(
+          "destination_image", "veneza01.jpg", MediaType.IMAGE_JPEG_VALUE, image);
+      image.close();
+
+      String actualContent = mockMvc
+          .perform(multipart(HttpMethod.PATCH, URL_TEMPLATE, "abcdef1234567890abcdef12", "aaaabbbbccccddddeeeefX")
+              .file(destinationImage)
+              .contentType(MediaType.MULTIPART_FORM_DATA))
+          .andExpect(status().isBadRequest())
+          .andReturn().getResponse().getContentAsString();
+
+      ProblemDetail actualResponseBody = mapper.readValue(actualContent, ProblemDetail.class);
+
+      Assertions.assertThat(actualResponseBody).isNotNull();
+      Assertions.assertThat(actualResponseBody.getTitle()).isNotNull().isEqualTo("Bad Request");
+      Assertions.assertThat(actualResponseBody.getDetail()).isNotNull()
+          .contains("id must be hexadecimal value", "id must be 24 characters long");
+      Assertions.assertThat(actualResponseBody.getStatus()).isEqualTo(400);
+    }
+
+    @Test
+    @DisplayName("updateImage must return status 400 and ProblemDetail when destination_image is invalid format")
+    void updateImage_MustReturnStatus400AndProblemDetail_WhenDestinationImageIsInvalidFormat() throws Exception {
+      InputStream image = new FileInputStream("src/test/resources/image/venezagif.gif");
+      MockMultipartFile destinationImage = new MockMultipartFile(
+          "destination_image", "venezagif.gif", MediaType.IMAGE_GIF_VALUE, image);
+      image.close();
+
+      String actualContent = mockMvc
+          .perform(multipart(HttpMethod.PATCH, URL_TEMPLATE, "abcdef1234567890abcdef12", "aaaabbbbccccddddeeeeffff")
+              .file(destinationImage)
+              .contentType(MediaType.MULTIPART_FORM_DATA))
+          .andExpect(status().isBadRequest())
+          .andReturn().getResponse().getContentAsString();
+
+      ProblemDetail actualResponseBody = mapper.readValue(actualContent, ProblemDetail.class);
+
+      Assertions.assertThat(actualResponseBody).isNotNull();
+      Assertions.assertThat(actualResponseBody.getTitle()).isNotNull().isEqualTo("Bad Request");
+      Assertions.assertThat(actualResponseBody.getDetail()).isNotNull()
+          .isEqualTo("file format must be [jpeg, png]");
+      Assertions.assertThat(actualResponseBody.getStatus()).isEqualTo(400);
+    }
+
+    @Test
+    @DisplayName("updateImage must return status 400 and ProblemDetail when part destination_image is not present")
+    void updateImage_MustReturnStatus400AndProblemDetail_WhenPartDestinationImageIsNotPresent() throws Exception {
+      String actualContent = mockMvc
+          .perform(multipart(HttpMethod.PATCH, URL_TEMPLATE, "abcdef1234567890abcdef12", "aaaabbbbccccddddeeeeffff")
+              .contentType(MediaType.MULTIPART_FORM_DATA))
+          .andExpect(status().isBadRequest())
+          .andReturn().getResponse().getContentAsString();
+
+      ProblemDetail actualResponseBody = mapper.readValue(actualContent, ProblemDetail.class);
+
+      Assertions.assertThat(actualResponseBody).isNotNull();
+      Assertions.assertThat(actualResponseBody.getTitle()).isNotNull().isEqualTo("Bad Request");
+      Assertions.assertThat(actualResponseBody.getDetail()).isNotNull()
+          .isEqualTo("Required part 'destination_image' is not present.");
+      Assertions.assertThat(actualResponseBody.getStatus()).isEqualTo(400);
+    }
+
+    @Test
+    @DisplayName("updateImage must return status 404 and ProblemDetail when not find destination")
+    void updateImage_MustReturnStatus404AndProblemDetail_WhenNotFindDestination() throws Exception {
+      BDDMockito.willThrow(new ResourceNotFoundException("Destination not found"))
+          .given(destinationServiceMock).updateImage(any(), any(), any());
+
+      InputStream image = new FileInputStream("src/test/resources/image/veneza01.jpg");
+      MockMultipartFile destinationImage = new MockMultipartFile(
+          "destination_image", "veneza01.jpg", MediaType.IMAGE_JPEG_VALUE, image);
+      image.close();
+
+      String actualContent = mockMvc
+          .perform(multipart(HttpMethod.PATCH, URL_TEMPLATE, "abcdef1234567890abcdef12", "aaaabbbbccccddddeeeeffff")
+              .file(destinationImage)
+              .contentType(MediaType.MULTIPART_FORM_DATA))
+          .andExpect(status().isNotFound())
+          .andReturn().getResponse().getContentAsString();
+
+      ProblemDetail actualResponseBody = mapper.readValue(actualContent, ProblemDetail.class);
+
+      Assertions.assertThat(actualResponseBody).isNotNull();
+      Assertions.assertThat(actualResponseBody.getTitle()).isNotNull().isEqualTo("Not Found");
+      Assertions.assertThat(actualResponseBody.getDetail()).isNotNull()
+          .contains("Destination not found");
+      Assertions.assertThat(actualResponseBody.getStatus()).isEqualTo(404);
+    }
+
+    @Test
+    @DisplayName("updateImage must return status 404 and ProblemDetail when not find image")
+    void updateImage_MustReturnStatus404AndProblemDetail_WhenNotFindImage() throws Exception {
+      BDDMockito.willThrow(new ResourceNotFoundException("Image not found"))
+          .given(destinationServiceMock).updateImage(any(), any(), any());
+
+      InputStream image = new FileInputStream("src/test/resources/image/veneza01.jpg");
+      MockMultipartFile destinationImage = new MockMultipartFile(
+          "destination_image", "veneza01.jpg", MediaType.IMAGE_JPEG_VALUE, image);
+      image.close();
+
+      String actualContent = mockMvc
+          .perform(multipart(HttpMethod.PATCH, URL_TEMPLATE, "abcdef1234567890abcdef12", "aaaabbbbccccddddeeeeffff")
+              .file(destinationImage)
+              .contentType(MediaType.MULTIPART_FORM_DATA))
+          .andExpect(status().isNotFound())
+          .andReturn().getResponse().getContentAsString();
+
+      ProblemDetail actualResponseBody = mapper.readValue(actualContent, ProblemDetail.class);
+
+      Assertions.assertThat(actualResponseBody).isNotNull();
+      Assertions.assertThat(actualResponseBody.getTitle()).isNotNull().isEqualTo("Not Found");
+      Assertions.assertThat(actualResponseBody.getDetail()).isNotNull()
+          .contains("Image not found");
+      Assertions.assertThat(actualResponseBody.getStatus()).isEqualTo(404);
+    }
+
+  }
+
+  @Nested
   @DisplayName("Tests for delete endpoint")
   class DeleteEndpoint {
 
