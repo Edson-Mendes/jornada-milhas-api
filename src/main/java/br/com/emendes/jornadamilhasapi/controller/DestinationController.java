@@ -37,7 +37,7 @@ import java.util.List;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/api/destinations", produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(value = "/api/destinations", produces = {"application/json;charset=UTF-8"})
 public class DestinationController {
 
   private final DestinationService destinationService;
