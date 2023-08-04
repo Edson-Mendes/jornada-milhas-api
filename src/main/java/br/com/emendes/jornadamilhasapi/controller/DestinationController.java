@@ -6,12 +6,20 @@ import br.com.emendes.jornadamilhasapi.service.dto.response.DestinationDetailsRe
 import br.com.emendes.jornadamilhasapi.service.dto.response.DestinationSummaryResponse;
 import br.com.emendes.jornadamilhasapi.validation.annotation.IdValidation;
 import br.com.emendes.jornadamilhasapi.validation.annotation.ImageValidation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +32,7 @@ import java.util.List;
 /**
  * Controller responsável pelo endpoint /api/destinations
  */
+@Tag(name = "Destination", description = "Destination management APIs")
 @CrossOrigin
 @Validated
 @RequiredArgsConstructor
@@ -40,6 +49,17 @@ public class DestinationController {
    * @param image1             arquivo de imagem do destino.
    * @param image2             arquivo de imagem do destino.
    */
+  @Operation(
+      summary = "Save destination",
+      description = "Save destination by sending a multipart/form-data request with a JSON containing name, meta, " +
+          "description (opcional) and price, and two image files in the format png or jpg."
+  )
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "201", description = "Successful save destination",
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = DestinationDetailsResponse.class))),
+      @ApiResponse(responseCode = "400", description = "Something is wrong with the request",
+          content = @Content(mediaType = "application/problem+json", schema = @Schema(implementation = ProblemDetail.class)))
+  })
   @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
   public ResponseEntity<DestinationDetailsResponse> save(
       @RequestPart(name = "destination_info") @Valid DestinationRequest destinationRequest,
@@ -57,9 +77,20 @@ public class DestinationController {
    *
    * @param pageable contém as informações de como a busca será paginada.
    */
+  @Operation(
+      summary = "Fetch page of destination, optional search by destination name",
+      description = "Fetch page of destination, optional search by destination name, the client can adjust " +
+          "page number, page size and sort parameter through parameters page, size and sort. " +
+          "(e.g. /api/destinations?page=2&size=5&sort=createdAt,ASC)."
+  )
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Successful fetch page of destinations"),
+      @ApiResponse(responseCode = "404", description = "When fetch by name and not found any destination",
+          content = @Content(mediaType = "application/problem+json", schema = @Schema(implementation = ProblemDetail.class)))
+  })
   @GetMapping
   public ResponseEntity<Page<DestinationSummaryResponse>> fetch(
-      @PageableDefault Pageable pageable,
+      @ParameterObject @PageableDefault Pageable pageable,
       @RequestParam(value = "name", required = false) String name) {
     if (name == null) {
       return ResponseEntity.ok(destinationService.fetch(pageable));
@@ -72,6 +103,17 @@ public class DestinationController {
    *
    * @param destinationId identificador do Destination a ser buscado.
    */
+  @Operation(
+      summary = "Search destination by id",
+      description = "Search destination by id, in case of success, a JSON containing id, name, price, meta, description" +
+          "images and createdAt fields will send on response body."
+  )
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Successful found destination",
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = DestinationDetailsResponse.class))),
+      @ApiResponse(responseCode = "400", description = "Something is wrong with the request"),
+      @ApiResponse(responseCode = "404", description = "Destination not found")
+  })
   @GetMapping("/{id}")
   public ResponseEntity<DestinationDetailsResponse> findById(
       @PathVariable(name = "id") @IdValidation String destinationId) {
@@ -84,6 +126,16 @@ public class DestinationController {
    * @param destinationId      identificador do Destination a ser buscado.
    * @param destinationRequest que contém as novas informações do Destination.
    */
+  @Operation(
+      summary = "Update destination by id",
+      description = "Update destination by id, a JSON containing new destination info (name, meta, description, price) " +
+          "must be sent on request body."
+  )
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "204", description = "Successful update destination"),
+      @ApiResponse(responseCode = "400", description = "Something is wrong with the request"),
+      @ApiResponse(responseCode = "404", description = "Destination not found")
+  })
   @PutMapping("/{id}")
   public ResponseEntity<Void> update(
       @PathVariable(name = "id") @IdValidation String destinationId,
@@ -99,7 +151,16 @@ public class DestinationController {
    * @param imageId       identificador da imagem.
    * @param image         nova imagem do destino.
    */
-  @PatchMapping("/{destinationId}/images/{imageId}")
+  @Operation(
+      summary = "Update destination image by id",
+      description = "Update destination image by id, a file on format (png or jpeg) must be sent on request body."
+  )
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "204", description = "Successful update destination image"),
+      @ApiResponse(responseCode = "400", description = "Something is wrong with the request"),
+      @ApiResponse(responseCode = "404", description = "Destination or image not found")
+  })
+  @PatchMapping(value = "/{destinationId}/images/{imageId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
   public ResponseEntity<Void> updateImage(
       @PathVariable(name = "destinationId") @IdValidation String destinationId,
       @PathVariable(name = "imageId") @IdValidation String imageId,
@@ -113,6 +174,15 @@ public class DestinationController {
    *
    * @param destinationId identificador do Destination a ser deletado.
    */
+  @Operation(
+      summary = "Delete destination by id",
+      description = "Delete all information about destination, including the destination images."
+  )
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "204", description = "Successful delete destination"),
+      @ApiResponse(responseCode = "400", description = "Something is wrong with the request"),
+      @ApiResponse(responseCode = "404", description = "Destination not found")
+  })
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable(name = "id") @IdValidation String destinationId) {
     destinationService.delete(destinationId);

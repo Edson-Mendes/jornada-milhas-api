@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,7 @@ import java.util.List;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/statements")
+@RequestMapping(value = "/api/statements", produces = {"application/json;charset=UTF-8"})
 public class StatementController {
 
   private final StatementService statementService;
@@ -33,7 +34,7 @@ public class StatementController {
    *
    * @param statementRequest que contém as informações do Statement a ser salvo
    */
-  @PostMapping
+  @PostMapping(consumes = {"application/json"})
   public ResponseEntity<StatementResponse> save(
       @RequestBody @Valid StatementRequest statementRequest) {
     StatementResponse statementResponse = statementService.save(statementRequest);
