@@ -40,13 +40,176 @@ Projeto proposto pela Alura no Challenge Backend 7ª Edição.
 <a href="https://projectlombok.org/" target="_blank"><img src="https://img.shields.io/badge/Lombok-a4a4a4.svg?&style=for-the-badge&logo=lombok&logoColor=black" target="_blank"></a>
 <a href="https://beanvalidation.org/" target="_blank"><img src="https://img.shields.io/badge/Jakarta%20Bean%20Validation-a4a4a4.svg?&style=for-the-badge&logo=Jakarta&logoColor=black" target="_blank"></a>
 <a href="https://hibernate.org/validator/" target="_blank"><img src="https://img.shields.io/badge/Hibernate%20Validator-59666C.svg?&style=for-the-badge&logo=hibernate&logoColor=white" target="_blank"></a>
+<a href="https://openai.com/" target="_blank"><img src="https://img.shields.io/badge/Open%20AI-412991.svg?&style=for-the-badge&logo=openai&logoColor=white" target="_blank"></a>
 
 <a href="https://junit.org/junit5/" target="_blank"><img src="https://img.shields.io/badge/JUnit%205-25A162.svg?&style=for-the-badge&logo=junit5&logoColor=white" target="_blank"></a>
 <a href="https://site.mockito.org/" target="_blank"><img src="https://img.shields.io/badge/Mockito-C5D9C8.svg?&style=for-the-badge" target="_blank"></a>
 <a href="https://www.postman.com/" target="_blank"><img src="https://img.shields.io/badge/postman-ff6c37.svg?&style=for-the-badge&logo=postman&logoColor=white" target="_blank"></a>
 <a href="https://en.wikipedia.org/wiki/Unit_testing" target="_blank"><img src="https://img.shields.io/badge/Unit%20Tests-5a61d6.svg?&style=for-the-badge&logo=unittest&logoColor=white" target="_blank"></a>
 
+<a href="https://springdoc.org/" target="_blank"><img src="https://img.shields.io/badge/Spring%20Doc-85EA2D.svg?&style=for-the-badge" target="_blank"></a>
+<a href="https://swagger.io/" target="_blank"><img src="https://img.shields.io/badge/Swagger-85EA2D.svg?&style=for-the-badge&logo=swagger&logoColor=black" target="_blank"></a>
+
 ## :bulb: Funcionalidades
+
+### API de gerenciamento de Destinos (Destination)
+
+- `Salvar`: Salvar um destino através de um **POST /api/destinations** com o *content-type* como *multipart/form-data*
+  e o request body em três partes, uma com nome **destination_info** com as informações *name*, *meta*,
+  *description* (opcional, caso não seja enviado uma descrição é fornecida pelo sistema através do ChatGPT)
+  e *price* em um JSON, a segunda parte com nome **destination_image1** com um arquivo de imagem **JPEG** ou **PNG**,
+  a terceira parte com nome **destination_image2** com um arquivo de imagem **JPEG** ou **PNG**.
+  Segue abaixo um exemplo do corpo da requisição.
+
+  ```
+  POST /api/destinations HTTP/1.1
+  Content-Length: 428
+  Content-Type: multipart/form-data; boundary=--BOUNDARY
+  
+  --BOUNDARY
+  Content-Type: application/json
+  Content-Disposition: form-data; name="destination_info"
+  
+  {
+    "name": "Veneza - Itália",
+    "meta": "Uma bela cidade da Itália",
+    "description": "descrição mais detalhada da cidade",
+    "price": 550.00
+  }
+    
+  --BOUNDARY
+  Content-Type: image/png
+  Content-Disposition: form-data; name="destination_image1"; filename="veneza.png"
+  
+  (Content of your image file)
+  
+  --BOUNDARY
+  Content-Type: image/png
+  Content-Disposition: form-data; name="destination_image2"; filename="veneza.png"
+    
+  (Content of your image file)
+  --BOUNDARY--
+  ```
+
+  Em caso de sucesso a resposta tem status 201 com um JSON no corpo da resposta contendo **id**, **name**,
+  **meta**, **description**, **price**, **images** e **createdAt** do destino salvo. Segue abaixo um exemplo do corpo da resposta.
+
+    ```json
+    {
+      "id" : "1234567890abcdef12345678",
+      "name" : "Veneza - Itália",
+      "price" : 550.00,
+      "meta" : "Uma bela cidade da Itália",
+      "description": "descrição mais detalhada da cidade",
+      "images" : [
+          "https://xptoimages.com/1234567.jpg",
+          "https://xptoimages.com/1234567.jpg"
+      ],
+      "createdAt": "2023-07-30T14:03:24"
+    }
+    ```
+
+- `Busca paginada`: Busca paginada de destinos através de um **GET /api/destinations**. O cliente decide qual página,
+  quantidade de dados, e modo de ordenação, basta adicionar os parâmetros na url da requisição. Também pode-se buscar por
+  nome do destino, também adicionando o parâmetro *name* com o nome do destino desejado na url da requisição.
+  ex: **/api/destinations?page=0&size=3&name=porto**.<br>
+
+  Em caso de sucesso a resposta tem status 200 com um JSON no corpo da resposta contendo os destinos encontrados.
+  Segue abaixo um exemplo do corpo da resposta.
+
+    ```json
+    {
+      "content": [
+        {
+          "id" : "1234567890abcdef1234567a",
+          "name" : "Porto Alegre - RS",
+          "price" : 650.00,
+          "image" : "https://xptoimages.com/poa.jpg",
+          "createdAt": "2023-07-19T15:00:00"
+        },
+        {
+          "id" : "1234567890abcdef1234567b",
+          "name" : "Porto Velho - RO",
+          "price" : 775.00,
+          "image" : "https://xptoimages.com/portovelho.jpg",
+          "createdAt": "2023-07-19T14:00:00"
+        },
+        {
+          "id" : "1234567890abcdef1234567c",
+          "name" : "Porto - Portugal",
+          "price" : 1500.00,
+          "image" : "https://xptoimages.com/porto.png",
+          "createdAt": "2023-07-19T13:00:00"
+        }
+      ],
+      "pageable": {
+        "sort": {
+            "empty": true,
+            "sorted": false,
+            "unsorted": true
+        },
+        "offset": 0,
+        "pageNumber": 0,
+        "pageSize": 3,
+        "paged": true,
+        "unpaged": false
+      },
+      "totalPages": 3,
+      "totalElements": 8,
+      "last": false,
+      "size": 3,
+      "number": 0,
+      "sort": {
+        "empty": true,
+        "sorted": false,
+        "unsorted": true
+      },
+      "numberOfElements": 3,
+      "first": true,
+      "empty": false
+    }
+    ```
+
+- `Busca por id`: Busca destino por ID através de um **GET /api/destinations/{ID}**, onde *{ID}* é o identificador do
+  Destino.<br>
+
+  Em caso de sucesso a resposta tem status 200 com um JSON no corpo da resposta contendo o destino solicitado.
+  Segue abaixo um exemplo do corpo da resposta.
+
+  ```json
+  {
+    "id" : "1234567890abcdef12345678",
+    "name" : "Veneza - Itália",
+    "price" : 550.00,
+    "urlImage" : "https://xptoimages.com/1234567.jpg",
+    "createdAt": "2023-07-19T14:03:24"
+  }
+  ```
+
+- `Atualizar`: Atualizar Destino através de um **PUT /api/destinations/{ID}**, onde *ID* é o identificador do Destino,
+  os novos dados do destino devem ser enviados através de um JSON no corpo da requisição,
+  com as informações *name*, *meta*, *description* (opcional, caso não seja enviado uma descrição é fornecida pelo sistema através do ChatGPT),
+  e *price*. Segue abaixo um exemplo do corpo da requisição.
+
+  ```json
+  {
+    "name": "Veneza - Itália",
+    "meta": "Uma bela cidade da Itália",
+    "description": "descrição mais detalhada da cidade",
+    "price": 550.00
+  }
+  ```
+  
+- `Atualizar imagem`: Atualizar imagem do destino através de um **PATCH /api/destinations/{destinationId}/images/{imagesId}**,
+  onde **destinationId** é o identificador do destino e **imageId** é o identificador da imagem. O *content-type* deve 
+  ser *multipart/form-data* e a imagem deve ser enviada no corpo da requisição em uma parte com chave **destination_image**.
+
+  Em caso de sucesso a resposta tem status 204.
+
+- `Deletar`: Deletar destino através de um **DELETE /api/destinations/{ID}**, onde *{ID}* é o identificador do
+  Destino.<br>
+
+  Em caso de sucesso a resposta tem status 204.
 
 ### API de gerenciamento de Depoimentos (Statement)
 
@@ -201,157 +364,41 @@ Projeto proposto pela Alura no Challenge Backend 7ª Edição.
 
   Em caso de sucesso a resposta tem status 204.
 
-### API de gerenciamento de Destinos (Destination)
+### API de gerenciamento de Imagens (Image)
 
-- `Salvar`: Salvar um destino através de um **POST /api/destinations** com o *content-type* como *multipart/form-data* 
-  e o request body em três partes, uma com nome **destination_info** com as informações *name*, *meta*, 
-  *description* (opcional, caso não seja enviado uma descrição é fornecida pelo sistema através do ChatGPT) 
-  e *price* em um JSON, a segunda parte com nome **destination_image1** com um arquivo de imagem **JPEG** ou **PNG**, 
-  a terceira parte com nome **destination_image2** com um arquivo de imagem **JPEG** ou **PNG**. 
-  Segue abaixo um exemplo do corpo da requisição.
+- `Buscar`: Buscar imagem através de um **GET /api/images/{ID}**, onde **ID** é o identificador da imagem.
 
-  ```
-  POST /api/destinations HTTP/1.1
-  Content-Length: 428
-  Content-Type: multipart/form-data; boundary=--BOUNDARY
-  
-  --BOUNDARY
-  Content-Type: application/json
-  Content-Disposition: form-data; name="destination_info"
-  
-  {
-    "name": "Veneza - Itália",
-    "meta": "Uma bela cidade da Itália",
-    "description": "descrição mais detalhada da cidade",
-    "price": 550.00
-  }
-    
-  --BOUNDARY
-  Content-Type: image/png
-  Content-Disposition: form-data; name="destination_image1"; filename="veneza.png"
-  
-  (Content of your image file)
-  
-  --BOUNDARY
-  Content-Type: image/png
-  Content-Disposition: form-data; name="destination_image2"; filename="veneza.png"
-    
-  (Content of your image file)
-  --BOUNDARY--
-  ```
+  Em caso de sucesso a resposta tem status 200 com um arquivo binário do tipo image/jpeg ou image/png no corpo da resposta.
 
-  Em caso de sucesso a resposta tem status 201 com um JSON no corpo da resposta contendo **id**, **name**, 
-  **meta**, **description**, **price**, **images** e **createdAt** do destino salvo. Segue abaixo um exemplo do corpo da resposta.
+## :computer: Executar a aplicação
 
-    ```json
-    {
-      "id" : "1234567890abcdef12345678",
-      "name" : "Veneza - Itália",
-      "price" : 550.00,
-      "meta" : "Uma bela cidade da Itália",
-      "description": "descrição mais detalhada da cidade",
-      "images" : [
-          "https://xptoimages.com/1234567.jpg",
-          "https://xptoimages.com/1234567.jpg"
-      ],
-      "createdAt": "2023-07-30T14:03:24"
-    }
-    ```
+### :whale: Via Docker
 
-- `Busca paginada`: Busca paginada de destinos através de um **GET /api/destinations**. O cliente decide qual página, 
-  quantidade de dados, e modo de ordenação, basta adicionar os parâmetros na url da requisição. Também pode-se buscar por 
-  nome do destino, também adicionando o parâmetro *name* com o nome do destino desejado na url da requisição.
-  ex: **/api/destinations?page=0&size=3&name=porto**.<br>
+Clone o projeto.
 
-  Em caso de sucesso a resposta tem status 200 com um JSON no corpo da resposta contendo os destinos encontrados.
-  Segue abaixo um exemplo do corpo da resposta.
+```bash
+git clone git@github.com:Edson-Mendes/jornada-milhas-api.git
+```
 
-    ```json
-    {
-      "content": [
-        {
-          "id" : "1234567890abcdef1234567a",
-          "name" : "Porto Alegre - RS",
-          "price" : 650.00,
-          "image" : "https://xptoimages.com/poa.jpg",
-          "createdAt": "2023-07-19T15:00:00"
-        },
-        {
-          "id" : "1234567890abcdef1234567b",
-          "name" : "Porto Velho - RO",
-          "price" : 775.00,
-          "image" : "https://xptoimages.com/portovelho.jpg",
-          "createdAt": "2023-07-19T14:00:00"
-        },
-        {
-          "id" : "1234567890abcdef1234567c",
-          "name" : "Porto - Portugal",
-          "price" : 1500.00,
-          "image" : "https://xptoimages.com/porto.png",
-          "createdAt": "2023-07-19T13:00:00"
-        }
-      ],
-      "pageable": {
-        "sort": {
-            "empty": true,
-            "sorted": false,
-            "unsorted": true
-        },
-        "offset": 0,
-        "pageNumber": 0,
-        "pageSize": 3,
-        "paged": true,
-        "unpaged": false
-      },
-      "totalPages": 3,
-      "totalElements": 8,
-      "last": false,
-      "size": 3,
-      "number": 0,
-      "sort": {
-        "empty": true,
-        "sorted": false,
-        "unsorted": true
-      },
-      "numberOfElements": 3,
-      "first": true,
-      "empty": false
-    }
-    ```
- 
-- `Busca por id`: Busca destino por ID através de um **GET /api/destinations/{ID}**, onde *{ID}* é o identificador do
-  Destino.<br>
+A aplicação tem integração com o ChatGPT, então é necessáio gerar uma [OpenAI KEY](https://platform.openai.com/docs/api-reference/authentication).
 
-  Em caso de sucesso a resposta tem status 200 com um JSON no corpo da resposta contendo o destino solicitado.
-  Segue abaixo um exemplo do corpo da resposta.
+Abra o arquivo [jornada-milhas-api.yml](https://github.com/Edson-Mendes/jornada-milhas-api/blob/main/jornada-milhas-api.yml) 
+e substitua o campo **<seu-token-open-ai>** pela sua **OpenAI KEY**.
 
-  ```json
-  {
-    "id" : "1234567890abcdef12345678",
-    "name" : "Veneza - Itália",
-    "price" : 550.00,
-    "urlImage" : "https://xptoimages.com/1234567.jpg",
-    "createdAt": "2023-07-19T14:03:24"
-  }
-  ```
+O arquivo [jornada-milhas-api.yml](https://github.com/Edson-Mendes/jornada-milhas-api/blob/main/jornada-milhas-api.yml) 
+está configurado para subir um container [MongoDB](https://hub.docker.com/_/mongo)e um container 
+[jornada-milhas-api](https://hub.docker.com/r/edsonmendes/jornada-milhas-api).
 
-- `Atualizar`: Atualizar Destino através de um **PUT /api/destinations/{ID}**, onde *ID* é o identificador do Destino,
-  os novos dados do destino devem ser enviados através de um JSON no corpo da requisição, 
-  com as informações *name*, *meta*, *description* (opcional, caso não seja enviado uma descrição é fornecida pelo sistema através do ChatGPT), 
-  e *price*. Segue abaixo um exemplo do corpo da requisição.
+Execute o comando abaixo no diretório da aplicação para subir os containers.
 
-  ```json
-  {
-    "name": "Veneza - Itália",
-    "meta": "Uma bela cidade da Itália",
-    "description": "descrição mais detalhada da cidade",
-    "price": 550.00
-  }
-  ```
+```bash
+docker compose -f jornada-milhas-api.yml up -d
+```
 
-  Em caso de sucesso a resposta tem status 204.
+Então acesse <localhost:8080/swagger-ui.html> para interagir com  a interface do Swagger.
 
-- `Deletar`: Deletar destino através de um **DELETE /api/destinations/{ID}**, onde *{ID}* é o identificador do
-  Destino.<br>
+### Atualizações futuras
 
-  Em caso de sucesso a resposta tem status 204.
+[ ] Adicionar autenticação de usuário (estou pensando em usar OAuth2).
+[ ] A urlImage do Depoimento ser a mesma imagem de perfil do usuário que cadastrar o depoimento.
+[ ] Realizar o deploy da aplicação.
