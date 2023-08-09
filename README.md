@@ -109,8 +109,8 @@ Projeto proposto pela Alura no Challenge Backend 7ª Edição.
     }
     ```
 
-- `Busca paginada`: Busca paginada de destinos através de um **GET /api/destinations**. O cliente decide qual página,
-  quantidade de dados, e modo de ordenação, basta adicionar os parâmetros na url da requisição. Também pode-se buscar por
+- `Busca paginada`: Busca paginada de destinos através de um **GET /api/destinations**. O cliente decide qual página (page),
+  quantidade de dados (size), e modo de ordenação (sort), basta adicionar os parâmetros na url da requisição. Também pode-se buscar por
   nome do destino, também adicionando o parâmetro *name* com o nome do destino desejado na url da requisição.
   ex: **/api/destinations?page=0&size=3&name=porto**.<br>
 
@@ -176,15 +176,20 @@ Projeto proposto pela Alura no Challenge Backend 7ª Edição.
   Em caso de sucesso a resposta tem status 200 com um JSON no corpo da resposta contendo o destino solicitado.
   Segue abaixo um exemplo do corpo da resposta.
 
-  ```json
-  {
-    "id" : "1234567890abcdef12345678",
-    "name" : "Veneza - Itália",
-    "price" : 550.00,
-    "urlImage" : "https://xptoimages.com/1234567.jpg",
-    "createdAt": "2023-07-19T14:03:24"
-  }
-  ```
+    ```json
+    {
+      "id" : "1234567890abcdef12345678",
+      "name" : "Veneza - Itália",
+      "price" : 550.00,
+      "meta" : "Uma bela cidade da Itália",
+      "description": "descrição mais detalhada da cidade",
+      "images" : [
+          "https://xptoimages.com/1234567.jpg",
+          "https://xptoimages.com/1234567.jpg"
+      ],
+      "createdAt": "2023-07-30T14:03:24"
+    }
+    ```
 
 - `Atualizar`: Atualizar Destino através de um **PUT /api/destinations/{ID}**, onde *ID* é o identificador do Destino,
   os novos dados do destino devem ser enviados através de um JSON no corpo da requisição,
@@ -199,6 +204,8 @@ Projeto proposto pela Alura no Challenge Backend 7ª Edição.
     "price": 550.00
   }
   ```
+
+  Em caso de sucesso a resposta tem status 204.
   
 - `Atualizar imagem`: Atualizar imagem do destino através de um **PATCH /api/destinations/{destinationId}/images/{imagesId}**,
   onde **destinationId** é o identificador do destino e **imageId** é o identificador da imagem. O *content-type* deve 
@@ -395,10 +402,10 @@ Execute o comando abaixo no diretório da aplicação para subir os containers.
 docker compose -f jornada-milhas-api.yml up -d
 ```
 
-Então acesse <localhost:8080/swagger-ui.html> para interagir com  a interface do Swagger.
+Então acesse <http://localhost:8080/swagger-ui.html> para interagir com  a interface do Swagger.
 
-### Atualizações futuras
+### :gear: Atualizações futuras
 
-[ ] Adicionar autenticação de usuário (estou pensando em usar OAuth2).
-[ ] A urlImage do Depoimento ser a mesma imagem de perfil do usuário que cadastrar o depoimento.
-[ ] Realizar o deploy da aplicação.
+- [ ] Adicionar autenticação de usuário (estou pensando em usar OAuth2).
+- [ ] A urlImage do Depoimento ser a mesma imagem de perfil do usuário que cadastrar o depoimento.
+- [ ] Realizar o deploy da aplicação.
