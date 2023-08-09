@@ -1,8 +1,11 @@
+server:
+  port: ${PORT:8080}
+
 # Datasource properties
 spring:
   data:
     mongodb:
-      uri: mongodb://user:1234@localhost:27017/jornada-milhas-db
+      uri: ${DB_URI:mongodb://user:1234@localhost:27017/jornada-milhas-db}
 
 # Multipart properties
   servlet:
