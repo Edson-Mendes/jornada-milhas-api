@@ -14,6 +14,20 @@ spring:
       max-file-size: 5MB
       max-request-size: 10MB
 
+# Security properties
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client_id: ${CLIENT_ID}
+            client_secret: ${CLIENT_SECRET}
+            scope: openid,profile,email
+      resourceserver:
+        jwt:
+          issuer-uri: https://accounts.google.com
+          jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
+
 # Environment variable
 jornadamilhas:
   openai:
