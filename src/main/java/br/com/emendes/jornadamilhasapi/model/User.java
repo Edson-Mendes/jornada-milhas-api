@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -31,5 +32,13 @@ public class User {
   @DocumentReference
   private Set<Authority> authorities;
   private LocalDateTime createdAt;
+
+  public void addAuthority(Authority authority) {
+    if (authorities == null) {
+      authorities = new HashSet<>();
+    }
+
+    authorities.add(authority);
+  }
 
 }
