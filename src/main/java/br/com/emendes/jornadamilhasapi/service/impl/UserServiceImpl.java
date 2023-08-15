@@ -13,6 +13,7 @@ import br.com.emendes.jornadamilhasapi.service.dto.request.CreateUserRequest;
 import br.com.emendes.jornadamilhasapi.service.dto.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,6 +36,7 @@ public class UserServiceImpl implements UserService {
   private final UserMapper userMapper;
   private final UserRepository userRepository;
   private final ImageService imageService;
+  private final PasswordEncoder passwordEncoder;
 
   @Override
   public UserResponse save(CreateUserRequest createUserRequest, MultipartFile image) {
@@ -54,8 +56,7 @@ public class UserServiceImpl implements UserService {
     URI uri = imageService.save(image);
     user.setImage(uri);
 
-    // TODO: encriptar o password.
-    user.setPassword(createUserRequest.password());
+    user.setPassword(passwordEncoder.encode(createUserRequest.password()));
 
     userRepository.save(user);
     return userMapper.toUserResponse(user);
