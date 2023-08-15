@@ -1,5 +1,6 @@
 package br.com.emendes.jornadamilhasapi.service.impl;
 
+import br.com.emendes.jornadamilhasapi.exception.EmailAlreadyInUseException;
 import br.com.emendes.jornadamilhasapi.exception.PasswordsDoNotMatchException;
 import br.com.emendes.jornadamilhasapi.mapper.UserMapper;
 import br.com.emendes.jornadamilhasapi.model.Authority;
@@ -27,7 +28,8 @@ import java.time.temporal.ChronoUnit;
 @Service
 public class UserServiceImpl implements UserService {
 
-  public static final String AUTHORITY_USER = "USER";
+  private static final String AUTHORITY_USER = "USER";
+  private static final String EMAIL_IN_USER_MESSAGE = "E-mail {%s} is already in use";
 
   private final AuthorityService authorityService;
   private final UserMapper userMapper;
@@ -38,6 +40,9 @@ public class UserServiceImpl implements UserService {
   public UserResponse save(CreateUserRequest createUserRequest, MultipartFile image) {
     if (!createUserRequest.password().equals(createUserRequest.confirmPassword())) {
       throw new PasswordsDoNotMatchException("password and confirmPassword do not match");
+    }
+    if (userRepository.existsByEmail(createUserRequest.email())) {
+      throw new EmailAlreadyInUseException(EMAIL_IN_USER_MESSAGE.formatted(createUserRequest.email()));
     }
 
     User user = userMapper.toUser(createUserRequest);
