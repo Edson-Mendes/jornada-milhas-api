@@ -10,15 +10,6 @@
 REST API de uma plataforma de turismo, onde pode-se pesquisar e visualizar destinos,
 preço médio de viagens, depoimentos de outros viajantes e muito mais.
 
-O projeto está em sua terceira semana de desenvolvimento, em que devemos: 
-- Modificar o endpoint de criação de destino para que aceite: 
-  - duas **imagens** 
-  - um campo **meta** para meta descrição
-  - um campo **description** para um resumo do destino (opcional) 
-- Desenvolver um endpoint para buscar mais detalhes sobre um destino
-- Integrar o **ChatGPT** para quando **description** não for informado, assim, o ChatGPT deverá gerar um resumo do 
-  destino que será salvo
-
 Projeto proposto pela Alura no Challenge Backend 7ª Edição.
 
 ## :toolbox: Tecnologias e ferramentas

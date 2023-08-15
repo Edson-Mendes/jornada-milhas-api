@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>br.com.emendes</groupId>
 	<artifactId>jornada-milhas-api</artifactId>
-	<version>0.3</version>
+	<version>1.0</version>
 	<name>Jornada Milhas API</name>
 	<description>REST API de uma plataforma de turismo, onde pode-se pesquisar e visualizar destinos, preço médio da viagem, depoimentos de outros viajantes e muito mais.</description>
 
