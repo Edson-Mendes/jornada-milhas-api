@@ -8,3 +8,10 @@ db.project_info.insert({
     framework: "Spring",
     started_at: ISODate("2023-07-17T14:00:00.000Z"),
 });
+
+db.createCollection("doc_authority");
+
+db.doc_authority.insertMany([
+    {name: 'USER'},
+    {name: 'ADMIN'}
+]);
