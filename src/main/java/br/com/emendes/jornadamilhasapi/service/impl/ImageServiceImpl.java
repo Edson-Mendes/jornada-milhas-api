@@ -27,6 +27,17 @@ public class ImageServiceImpl implements ImageService {
   private final ImageRepository imageRepository;
 
   @Override
+  public URI save(MultipartFile file) {
+    log.info("attempt to save image");
+
+    Image image = imageMapper.toImage(file);
+    imageRepository.save(image);
+
+    log.info("image saved successful");
+    return imageMapper.toURI(image);
+  }
+
+  @Override
   public List<URI> saveAll(List<MultipartFile> files) {
     log.info("attempt to save images");
 

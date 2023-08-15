@@ -12,7 +12,15 @@ import java.util.List;
 public interface ImageService {
 
   /**
-   * Salva uma imagem no sistema.
+   * Salva uma imagem do sistema.
+   *
+   * @param image file contendo a imagem a ser salva.
+   * @return {@code URI} url da imagem salva.
+   */
+  URI save(MultipartFile image);
+
+  /**
+   * Salva uma lista de imagens no sistema.
    *
    * @param images List de files contendo a imagens a serem salvas.
    * @return {@code List<URI>} urls das imagens salvas.
