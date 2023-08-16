@@ -15,4 +15,19 @@ public interface JwtService {
    */
   String generateToken(User user);
 
+  /**
+   * Verifica se o token é válido (não alterado e não expirado).
+   *
+   * @param token token a ser verificado.
+   * @return true se o token for válido, false caso contrário.
+   */
+  boolean isTokenValid(String token);
+
+  /**
+   * Extrai o Subject do token.
+   *
+   * @param token que contém o subject.
+   * @return Subject que estava no payload do token.
+   */
+  String extractSubject(String token);
 }
