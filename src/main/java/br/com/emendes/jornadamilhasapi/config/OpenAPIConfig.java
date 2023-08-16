@@ -16,6 +16,8 @@ import java.util.ArrayList;
 @Configuration
 public class OpenAPIConfig {
 
+  public static final String API_TITLE = "Jornada Milhas API";
+
   /**
    * Adicionei isso por que o Swagger UI não permite definir o contentType para parts em requests multipart/form-data
    * ou seja, em requests com files e json no request body, o json acaba sendo enviado como application/octet-stream,
@@ -38,7 +40,7 @@ public class OpenAPIConfig {
     String description = "Tourism platform REST API, where the client can search and view destinations, average trip price, statements from other travelers and much more.";
 
     return new OpenAPI()
-        .info(new Info().title("Jornada Milhas API")
+        .info(new Info().title(API_TITLE)
             .description(description)
             .version("v0.3").contact(contact));
   }

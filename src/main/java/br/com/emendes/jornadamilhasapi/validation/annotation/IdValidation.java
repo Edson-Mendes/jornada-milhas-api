@@ -18,7 +18,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = {})
 @Size(min = 24, max = 24, message = "id must be 24 characters long")
-@Pattern(regexp = "[a-fA-F0-9]*", message = "id must be hexadecimal value")
+@Pattern(regexp = "[a-fA-F0-9]*", message = "id must be hexadecimal token")
 public @interface IdValidation {
 
   String message() default "invalid id";

@@ -28,6 +28,12 @@ public class UserController {
 
   private final UserService userService;
 
+  /**
+   * Método responsável por POST /api/users.
+   *
+   * @param createUserRequest que contém as informações do User a ser salvo
+   * @param image             arquivo de imagem do User.
+   */
   @PostMapping
   public ResponseEntity<UserResponse> save(
       @RequestPart(name = "user_info") @Valid CreateUserRequest createUserRequest,

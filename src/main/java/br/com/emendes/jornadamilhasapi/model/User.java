@@ -4,9 +4,12 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,7 +23,7 @@ import java.util.Set;
 @Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Document(value = "doc_user")
-public class User {
+public class User implements UserDetails {
 
   @EqualsAndHashCode.Include
   @Id
@@ -41,4 +44,38 @@ public class User {
     authorities.add(authority);
   }
 
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return this.authorities;
+  }
+
+  @Override
+  public String getUsername() {
+    return this.email;
+  }
+
+  @Override
+  public String getPassword() {
+    return this.password;
+  }
+
+  @Override
+  public boolean isAccountNonExpired() {
+    return true;
+  }
+
+  @Override
+  public boolean isAccountNonLocked() {
+    return true;
+  }
+
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return true;
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return true;
+  }
 }

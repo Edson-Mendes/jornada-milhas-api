@@ -413,7 +413,7 @@ class DestinationControllerTest {
       Assertions.assertThat(actualResponseBody).isNotNull();
       Assertions.assertThat(actualResponseBody.getTitle()).isNotNull().isEqualTo("Bad Request");
       Assertions.assertThat(actualResponseBody.getDetail()).isNotNull()
-          .contains("id must be hexadecimal value", "id must be 24 characters long");
+          .contains("id must be hexadecimal token", "id must be 24 characters long");
       Assertions.assertThat(actualResponseBody.getStatus()).isEqualTo(400);
     }
 
@@ -523,7 +523,7 @@ class DestinationControllerTest {
       Assertions.assertThat(actualResponseBody).isNotNull();
       Assertions.assertThat(actualResponseBody.getTitle()).isNotNull().isEqualTo("Bad Request");
       Assertions.assertThat(actualResponseBody.getDetail()).isNotNull()
-          .contains("id must be hexadecimal value", "id must be 24 characters long");
+          .contains("id must be hexadecimal token", "id must be 24 characters long");
       Assertions.assertThat(actualResponseBody.getStatus()).isEqualTo(400);
     }
 
@@ -599,7 +599,7 @@ class DestinationControllerTest {
       Assertions.assertThat(actualResponseBody).isNotNull();
       Assertions.assertThat(actualResponseBody.getTitle()).isNotNull().isEqualTo("Bad Request");
       Assertions.assertThat(actualResponseBody.getDetail()).isNotNull()
-          .contains("id must be hexadecimal value", "id must be 24 characters long");
+          .contains("id must be hexadecimal token", "id must be 24 characters long");
       Assertions.assertThat(actualResponseBody.getStatus()).isEqualTo(400);
     }
 
@@ -623,7 +623,7 @@ class DestinationControllerTest {
       Assertions.assertThat(actualResponseBody).isNotNull();
       Assertions.assertThat(actualResponseBody.getTitle()).isNotNull().isEqualTo("Bad Request");
       Assertions.assertThat(actualResponseBody.getDetail()).isNotNull()
-          .contains("id must be hexadecimal value", "id must be 24 characters long");
+          .contains("id must be hexadecimal token", "id must be 24 characters long");
       Assertions.assertThat(actualResponseBody.getStatus()).isEqualTo(400);
     }
 
@@ -751,7 +751,7 @@ class DestinationControllerTest {
       Assertions.assertThat(actualResponseBody).isNotNull();
       Assertions.assertThat(actualResponseBody.getTitle()).isNotNull().isEqualTo("Bad Request");
       Assertions.assertThat(actualResponseBody.getDetail()).isNotNull()
-          .contains("id must be hexadecimal value", "id must be 24 characters long");
+          .contains("id must be hexadecimal token", "id must be 24 characters long");
       Assertions.assertThat(actualResponseBody.getStatus()).isEqualTo(400);
     }
 
