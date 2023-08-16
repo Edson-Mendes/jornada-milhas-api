@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -90,6 +91,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     URI uri = URI.create("http://non-implemented.com/file-access");
     problemDetail.setType(uri);
+
+    return ResponseEntity.status(status).body(problemDetail);
+  }
+
+  @ExceptionHandler(BadCredentialsException.class)
+  public ResponseEntity<ProblemDetail> handle(BadCredentialsException ex) {
+    HttpStatusCode status = HttpStatusCode.valueOf(400);
+
+    ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, "email or password incorrect");
+
+    URI uri = URI.create("http://non-implemented.com/bad-credentials");
+    problemDetail.setType(uri);
+    problemDetail.setTitle("Bad credentials");
 
     return ResponseEntity.status(status).body(problemDetail);
   }
